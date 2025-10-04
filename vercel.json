@@ -4,8 +4,5 @@
       "source": "/api/:path*",
       "destination": "/api/:path*"
     }
-  ],
-  "env": {
-    "API_NINJAS_KEY": "@api_ninjas_key"
-  }
+  ]
 }
