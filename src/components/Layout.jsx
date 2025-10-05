@@ -1,7 +1,17 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { LayoutDashboard, ScanLine, History, MapPin, Bike, LogOut, Menu, X } from 'lucide-react';
+import {
+  LayoutDashboard,
+  ScanLine,
+  History,
+  MapPin,
+  Bike,
+  LogOut,
+  Menu,
+  X,
+  PlusCircle,
+} from "lucide-react";
 
 function Layout({ children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -19,11 +29,12 @@ function Layout({ children }) {
   };
 
   const navItems = [
-    { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-    { path: '/scan', icon: ScanLine, label: 'Scan Bill' },
-    { path: '/history', icon: History, label: 'History' },
-    { path: '/stations', icon: MapPin, label: 'Stations' },
-    { path: '/bike', icon: Bike, label: 'My Bike' },
+    { path: "/", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/scan", icon: ScanLine, label: "Scan Bill" },
+    { path: "/add-manual", icon: PlusCircle, label: "Add Manual" },
+    { path: "/history", icon: History, label: "History" },
+    { path: "/stations", icon: MapPin, label: "Stations" },
+    { path: "/bike", icon: Bike, label: "My Bike" },
   ];
 
   const isActive = (path) => location.pathname === path;

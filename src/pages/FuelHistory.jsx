@@ -3,15 +3,16 @@ import { useAuth } from '../hooks/useAuth';
 import { collection, query, where, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { format } from 'date-fns';
-import { Trash2, Filter, Info } from 'lucide-react';
+import { Trash2, Filter, Info, Image, X } from "lucide-react";
 
 function FuelHistory() {
   const { currentUser } = useAuth();
   const [fuelRecords, setFuelRecords] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
-  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [filter, setFilter] = useState("all");
+  const [dateRange, setDateRange] = useState({ start: "", end: "" });
 
   useEffect(() => {
     fetchFuelRecords();
@@ -24,43 +25,46 @@ function FuelHistory() {
   const fetchFuelRecords = async () => {
     try {
       const q = query(
-        collection(db, 'fuelRecords'),
-        where('userId', '==', currentUser.uid),
-        orderBy('date', 'desc')
+        collection(db, "fuelRecords"),
+        where("userId", "==", currentUser.uid),
+        orderBy("date", "desc")
       );
-      
+
       const querySnapshot = await getDocs(q);
       const records = [];
       querySnapshot.forEach((doc) => {
         records.push({ id: doc.id, ...doc.data() });
       });
-      
+
       setFuelRecords(records);
       setFilteredRecords(records);
     } catch (error) {
-      console.error('Error fetching fuel records:', error);
-      
+      console.error("Error fetching fuel records:", error);
+
       // If index error, try without orderBy (same fallback as Dashboard)
-      if (error.code === 'failed-precondition' || error.message?.includes('index')) {
-        console.log('Index not ready, fetching without ordering...');
+      if (
+        error.code === "failed-precondition" ||
+        error.message?.includes("index")
+      ) {
+        console.log("Index not ready, fetching without ordering...");
         try {
           const simpleQuery = query(
-            collection(db, 'fuelRecords'),
-            where('userId', '==', currentUser.uid)
+            collection(db, "fuelRecords"),
+            where("userId", "==", currentUser.uid)
           );
           const querySnapshot = await getDocs(simpleQuery);
           const records = [];
           querySnapshot.forEach((doc) => {
             records.push({ id: doc.id, ...doc.data() });
           });
-          
+
           // Sort manually by date (newest first)
           records.sort((a, b) => new Date(b.date) - new Date(a.date));
-          
+
           setFuelRecords(records);
           setFilteredRecords(records);
         } catch (innerError) {
-          console.error('Fallback query also failed:', innerError);
+          console.error("Fallback query also failed:", innerError);
         }
       }
     } finally {
@@ -72,15 +76,18 @@ function FuelHistory() {
     let filtered = [...fuelRecords];
 
     // Filter by fuel type
-    if (filter !== 'all') {
-      filtered = filtered.filter(record => record.fuelType === filter);
+    if (filter !== "all") {
+      filtered = filtered.filter((record) => record.fuelType === filter);
     }
 
     // Filter by date range
     if (dateRange.start && dateRange.end) {
-      filtered = filtered.filter(record => {
+      filtered = filtered.filter((record) => {
         const recordDate = new Date(record.date);
-        return recordDate >= new Date(dateRange.start) && recordDate <= new Date(dateRange.end);
+        return (
+          recordDate >= new Date(dateRange.start) &&
+          recordDate <= new Date(dateRange.end)
+        );
       });
     }
 
@@ -88,28 +95,28 @@ function FuelHistory() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this record?')) {
+    if (window.confirm("Are you sure you want to delete this record?")) {
       try {
-        await deleteDoc(doc(db, 'fuelRecords', id));
-        setFuelRecords(prev => prev.filter(record => record.id !== id));
+        await deleteDoc(doc(db, "fuelRecords", id));
+        setFuelRecords((prev) => prev.filter((record) => record.id !== id));
       } catch (error) {
-        console.error('Error deleting record:', error);
-        alert('Failed to delete record');
+        console.error("Error deleting record:", error);
+        alert("Failed to delete record");
       }
     }
   };
 
   const calculateMileage = (index) => {
-    if (index >= filteredRecords.length - 1) return '-';
-    
+    if (index >= filteredRecords.length - 1) return "-";
+
     const current = filteredRecords[index];
     const previous = filteredRecords[index + 1];
-    
+
     const distance = current.odometerReading - previous.odometerReading;
-    if (distance <= 0) return '-';
-    
+    if (distance <= 0) return "-";
+
     const mileage = distance / current.fuelVolume;
-    return mileage.toFixed(2) + ' km/l';
+    return mileage.toFixed(2) + " km/l";
   };
 
   if (loading) {
@@ -127,18 +134,22 @@ function FuelHistory() {
       </div>
 
       {/* Station Info Notice */}
-      {fuelRecords.some(r => !r.stationName) && (
+      {fuelRecords.some((r) => !r.stationName) && (
         <div className="card bg-blue-50 border border-blue-200">
           <div className="flex items-start space-x-3">
             <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div className="text-sm">
-              <p className="text-blue-900 font-medium mb-1">ℹ️ Station Information</p>
+              <p className="text-blue-900 font-medium mb-1">
+                ℹ️ Station Information
+              </p>
               <p className="text-blue-800">
-                Station names and addresses are automatically extracted from scanned bills using OCR. 
-                Your current records show "No station info" because they were added before this feature was enabled.
+                Station names and addresses are automatically extracted from
+                scanned bills using OCR. Your current records show "No station
+                info" because they were added before this feature was enabled.
               </p>
               <p className="text-blue-800 mt-2">
-                <strong>Next time you scan a bill:</strong> Station details will be automatically saved!
+                <strong>Next time you scan a bill:</strong> Station details will
+                be automatically saved!
               </p>
             </div>
           </div>
@@ -151,7 +162,7 @@ function FuelHistory() {
           <Filter className="w-5 h-5 text-gray-600" />
           <h2 className="text-lg font-semibold">Filters</h2>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -175,7 +186,9 @@ function FuelHistory() {
             <input
               type="date"
               value={dateRange.start}
-              onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+              onChange={(e) =>
+                setDateRange((prev) => ({ ...prev, start: e.target.value }))
+              }
               className="input-field"
             />
           </div>
@@ -187,7 +200,9 @@ function FuelHistory() {
             <input
               type="date"
               value={dateRange.end}
-              onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+              onChange={(e) =>
+                setDateRange((prev) => ({ ...prev, end: e.target.value }))
+              }
               className="input-field"
             />
           </div>
@@ -230,7 +245,7 @@ function FuelHistory() {
               {filteredRecords.map((record, index) => (
                 <tr key={record.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {format(new Date(record.date), 'MMM dd, yyyy HH:mm')}
+                    {format(new Date(record.date), "MMM dd, yyyy HH:mm")}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {record.stationName ? (
@@ -243,15 +258,19 @@ function FuelHistory() {
                         )}
                       </div>
                     ) : (
-                      <span className="text-gray-400 italic">No station info</span>
+                      <span className="text-gray-400 italic">
+                        No station info
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      record.fuelType === 'Petrol' 
-                        ? 'bg-blue-100 text-blue-800' 
-                        : 'bg-green-100 text-green-800'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${
+                        record.fuelType === "Petrol"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                    >
                       {record.fuelType}
                     </span>
                   </td>
@@ -268,12 +287,24 @@ function FuelHistory() {
                     {calculateMileage(index)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <button
-                      onClick={() => handleDelete(record.id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                    <div className="flex items-center space-x-2">
+                      {record.billImageUrl && (
+                        <button
+                          onClick={() => setSelectedImage(record.billImageUrl)}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="View Bill Image"
+                        >
+                          <Image className="w-5 h-5" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDelete(record.id)}
+                        className="text-red-600 hover:text-red-800"
+                        title="Delete Record"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -291,31 +322,67 @@ function FuelHistory() {
       {/* Summary */}
       {filteredRecords.length > 0 && (
         <div className="card bg-primary-50 border border-primary-200">
-          <h3 className="text-lg font-semibold text-primary-900 mb-4">Summary</h3>
+          <h3 className="text-lg font-semibold text-primary-900 mb-4">
+            Summary
+          </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <p className="text-sm text-primary-700">Total Records</p>
-              <p className="text-2xl font-bold text-primary-900">{filteredRecords.length}</p>
+              <p className="text-2xl font-bold text-primary-900">
+                {filteredRecords.length}
+              </p>
             </div>
             <div>
               <p className="text-sm text-primary-700">Total Fuel</p>
               <p className="text-2xl font-bold text-primary-900">
-                {filteredRecords.reduce((sum, r) => sum + r.fuelVolume, 0).toFixed(2)} L
+                {filteredRecords
+                  .reduce((sum, r) => sum + r.fuelVolume, 0)
+                  .toFixed(2)}{" "}
+                L
               </p>
             </div>
             <div>
               <p className="text-sm text-primary-700">Total Spent</p>
               <p className="text-2xl font-bold text-primary-900">
-                ₹{filteredRecords.reduce((sum, r) => sum + r.amount, 0).toFixed(2)}
+                ₹
+                {filteredRecords
+                  .reduce((sum, r) => sum + r.amount, 0)
+                  .toFixed(2)}
               </p>
             </div>
             <div>
               <p className="text-sm text-primary-700">Avg Price/L</p>
               <p className="text-2xl font-bold text-primary-900">
-                ₹{(filteredRecords.reduce((sum, r) => sum + r.amount, 0) / 
-                  filteredRecords.reduce((sum, r) => sum + r.fuelVolume, 0)).toFixed(2)}
+                ₹
+                {(
+                  filteredRecords.reduce((sum, r) => sum + r.amount, 0) /
+                  filteredRecords.reduce((sum, r) => sum + r.fuelVolume, 0)
+                ).toFixed(2)}
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Viewer Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-lg overflow-hidden">
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 z-10"
+            >
+              <X className="w-6 h-6 text-gray-800" />
+            </button>
+            <img
+              src={selectedImage}
+              alt="Fuel Bill"
+              className="max-w-full max-h-[85vh] object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         </div>
       )}

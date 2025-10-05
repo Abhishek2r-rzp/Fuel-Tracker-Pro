@@ -87,15 +87,19 @@ function parseReceiptText(text) {
     // === AMOUNT EXTRACTION ===
     if (!result.amount) {
       const amountPatterns = [
+        /Amount\s*\(INR\)\s*:\s*(\d+\.?\s?\d*)/i, // Amount (INR): 1266. 28
+        /Amount\s*\(INR\)\s*:?\s*(\d+\.\d{2})/i, // Amount (INR): 1266.28
         /(?:Total|Amount|Grand\s*Total|Net\s*Amount)\s*:?\s*(?:Rs\.?|₹)?\s*(\d+(?:\.\d{1,2})?)/i,
         /(?:Rs\.?|₹)\s*(\d+(?:\.\d{1,2})?)\s*(?:Total|Amount|Net)/i,
-        /(\d+\.\d{2})\s*(?:Rs|INR|Rupees)/i
+        /Amount.*?(\d+\.\s?\d{2})/i, // Amount: 1266. 28
+        /\|\s*Amount.*?:\s*(\d+\.?\s?\d+)/i, // | Amount (INR): 1266. 28
       ];
-      
+
       for (const pattern of amountPatterns) {
         const match = line.match(pattern);
         if (match) {
-          result.amount = match[1];
+          // Remove spaces from the extracted amount
+          result.amount = match[1].replace(/\s+/g, "");
           break;
         }
       }
@@ -104,14 +108,17 @@ function parseReceiptText(text) {
     // === FUEL VOLUME EXTRACTION ===
     if (!result.fuelVolume) {
       const volumePatterns = [
+        /Volume\s*:\s*(\d+\.?\s?\d*)\s*(?:L|Litres?)/i, // Volume: 11. 90L
+        /Volume\s*:\s*(\d+\.\d{2})\s*L/i, // Volume: 11.90L
         /(?:Quantity|Volume|Qty|Sale)\s*:?\s*(\d+(?:\.\d{1,3})?)\s*(?:Litres?|Ltrs?|L|Liter)/i,
-        /(\d+(?:\.\d{1,3})?)\s*(?:Litres?|Ltrs?|L(?:\s|$|i))/i
+        /(\d+\.?\s?\d+)\s*(?:Litres?|Ltrs?|L(?:\s|$))/i, // 11. 90L or 11.90L
       ];
-      
+
       for (const pattern of volumePatterns) {
         const match = line.match(pattern);
         if (match) {
-          result.fuelVolume = match[1];
+          // Remove spaces from the extracted volume
+          result.fuelVolume = match[1].replace(/\s+/g, "");
           break;
         }
       }
@@ -120,14 +127,17 @@ function parseReceiptText(text) {
     // === PRICE PER LITER ===
     if (!result.pricePerLiter) {
       const pricePatterns = [
+        /Unit\s*price(?:\(INR\))?\s*:\s*(\d+\.?\s?\d*)/i, // Unit price(INR): 106. 41
+        /Unit\s*price.*?:\s*(\d+\.\d{2})/i, // Unit price: 106.41
         /(?:Rate|Price|Per\s*Liter?|Per\s*Ltr|Unit\s*Price)\s*:?\s*(?:Rs\.?|₹)?\s*(\d+(?:\.\d{1,2})?)/i,
-        /(?:Rs\.?|₹)\s*(\d+(?:\.\d{1,2})?)\s*(?:\/|per)\s*(?:Liter|Ltr|L)/i
+        /(?:Rs\.?|₹)\s*(\d+(?:\.\d{1,2})?)\s*(?:\/|per)\s*(?:Liter|Ltr|L)/i,
       ];
-      
+
       for (const pattern of pricePatterns) {
         const match = line.match(pattern);
         if (match) {
-          result.pricePerLiter = match[1];
+          // Remove spaces from the extracted price
+          result.pricePerLiter = match[1].replace(/\s+/g, "");
           break;
         }
       }
@@ -135,19 +145,91 @@ function parseReceiptText(text) {
 
     // === FUEL TYPE DETECTION ===
     if (!result.fuelType) {
-      if (/PETROL|MS\b|XP\s*95|PREMIUM|SPEED/i.test(lineUpper)) result.fuelType = 'Petrol';
-      else if (/DIESEL|HSD|POWER/i.test(lineUpper)) result.fuelType = 'Diesel';
-      else if (/CNG|GAS/i.test(lineUpper)) result.fuelType = 'CNG';
+      if (/PETROL|MS\b|XP\s*95|PREMIUM|SPEED/i.test(lineUpper))
+        result.fuelType = "Petrol";
+      else if (/DIESEL|HSD|POWER/i.test(lineUpper)) result.fuelType = "Diesel";
+      else if (/CNG|GAS/i.test(lineUpper)) result.fuelType = "CNG";
+      else if (/ULP/i.test(lineUpper)) result.fuelType = "Petrol"; // Unleaded Petrol
+    }
+
+    // === PUMP NUMBER ===
+    if (!result.pumpNumber) {
+      const pumpPatterns = [
+        /Pump\s*No\s*:\s*(\d+)/i, // Pump No: 4
+        /Pump\s*:\s*(\d+)/i, // Pump: 4
+        /Nozzle.*?:\s*(\d+)/i,
+        /MPD.*?:\s*(\d+)/i,
+      ];
+
+      for (const pattern of pumpPatterns) {
+        const match = line.match(pattern);
+        if (match) {
+          result.pumpNumber = match[1].trim();
+          break;
+        }
+      }
+    }
+
+    // === INVOICE NUMBER ===
+    if (!result.invoiceNumber) {
+      const invoicePatterns = [
+        /^([A-Z0-9]{10,})$/i, // Line with just alphanumeric code (e.g., 29AFPPN3621P1Z20Q)
+        /Invoice.*?:\s*([A-Z0-9\-\/]{5,})/i,
+        /Bill.*?:\s*([A-Z0-9\-\/]{5,})/i,
+        /Receipt.*?:\s*([A-Z0-9\-\/]{5,})/i,
+        /Txn.*?:\s*([A-Z0-9\-\/]{5,})/i,
+      ];
+
+      for (const pattern of invoicePatterns) {
+        const match = line.match(pattern);
+        if (match && match[1].length >= 10) {
+          // At least 10 characters for invoice
+          result.invoiceNumber = match[1].trim();
+          break;
+        }
+      }
+    }
+
+    // === GRADE/FUEL GRADE ===
+    if (!result.fuelGrade) {
+      const gradeMatch = line.match(/Grade\s*:\s*([A-Z0-9]+)/i);
+      if (gradeMatch) {
+        result.fuelGrade = gradeMatch[1].trim();
+      }
     }
 
     // === STATION NAME ===
-    if (!result.stationName && i < 8) {
-      const companies = ['INDIAN OIL', 'IOCL', 'IOC', 'BPCL', 'BHARAT PETROLEUM', 'BP', 'HPCL', 'HINDUSTAN PETROLEUM', 'HP', 'SHELL', 'ESSAR', 'RELIANCE', 'NAYARA'];
+    if (!result.stationName && i < 10) {
+      // First check for known companies
+      const companies = [
+        "INDIAN OIL",
+        "IOCL",
+        "IOC",
+        "BPCL",
+        "BHARAT PETROLEUM",
+        "BP",
+        "HPCL",
+        "HINDUSTAN PETROLEUM",
+        "HP",
+        "SHELL",
+        "ESSAR",
+        "RELIANCE",
+        "NAYARA",
+        "SS ENTERPRISES",
+      ];
       for (const company of companies) {
         if (lineUpper.includes(company)) {
-          result.stationName = line;
+          result.stationName = line.replace(/^gy\s+/i, "").trim(); // Remove "gy" prefix if present
           break;
         }
+      }
+
+      // If not found by company name, look for "ENTERPRISES" or similar business suffixes
+      if (
+        !result.stationName &&
+        /(?:ENTERPRISES|PETROLEUM|FUELS?|ENERGY|SERVICE)/i.test(line)
+      ) {
+        result.stationName = line.replace(/^gy\s+/i, "").trim();
       }
     }
 

@@ -5,15 +5,16 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ScanBill from './pages/ScanBill';
-import FuelHistory from './pages/FuelHistory';
-import FuelStations from './pages/FuelStations';
-import BikeProfile from './pages/BikeProfile';
-import Layout from './components/Layout';
+import AddManual from "./pages/AddManual";
+import FuelHistory from "./pages/FuelHistory";
+import FuelStations from "./pages/FuelStations";
+import BikeProfile from "./pages/BikeProfile";
+import Layout from "./components/Layout";
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
   const { currentUser, loading } = useAuth();
-  
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -21,7 +22,7 @@ function ProtectedRoute({ children }) {
       </div>
     );
   }
-  
+
   return currentUser ? children : <Navigate to="/login" />;
 }
 
@@ -40,6 +41,7 @@ function App() {
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/scan" element={<ScanBill />} />
+                    <Route path="/add-manual" element={<AddManual />} />
                     <Route path="/history" element={<FuelHistory />} />
                     <Route path="/stations" element={<FuelStations />} />
                     <Route path="/bike" element={<BikeProfile />} />

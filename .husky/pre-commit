@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit hook..."
+echo "📦 Building project to verify code integrity..."
+
+# Run the build
+npm run build
+
+# Check if build was successful
+if [ $? -eq 0 ]; then
+  echo "✅ Build successful! Proceeding with commit..."
+  exit 0
+else
+  echo "❌ Build failed! Commit aborted."
+  echo "🔧 Please fix the build errors before committing."
+  exit 1
+fi
