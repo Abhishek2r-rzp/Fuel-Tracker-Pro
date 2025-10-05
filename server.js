@@ -4,12 +4,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Load environment variables
 dotenv.config();
