@@ -1,13 +1,23 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, CheckCircle, XCircle, Loader } from 'lucide-react';
+import { useAuth } from '@bill-reader/shared-auth';
+import { Upload, FileText, CheckCircle, XCircle, Loader, AlertTriangle } from 'lucide-react';
 import { processFile } from '../services/fileProcessor';
+import { addTransactionsBatch, addStatement, getTransactions } from '../services/firestoreService';
+import { detectDuplicates } from '../utils/duplicateDetection';
+import { categorizeTransaction } from '../utils/categorization';
 
 function UploadStatement() {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [file, setFile] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [duplicates, setDuplicates] = useState([]);
+  const [duplicateAction, setDuplicateAction] = useState('skip'); // 'skip' or 'import'
 
   const onDrop = async (acceptedFiles) => {
     if (acceptedFiles.length === 0) return;
@@ -16,15 +26,70 @@ function UploadStatement() {
     setFile(selectedFile);
     setError(null);
     setResult(null);
+    setDuplicates([]);
     setProcessing(true);
 
     try {
+      // Process file
       const parsed = await processFile(selectedFile);
-      setResult(parsed);
+      
+      // Categorize transactions
+      const categorized = parsed.transactions.map(txn => ({
+        ...txn,
+        category: categorizeTransaction(txn.description || ''),
+      }));
+
+      parsed.transactions = categorized;
+
+      // Check for duplicates
+      const existingTransactions = await getTransactions(currentUser.uid);
+      const { newTransactions, duplicates: foundDuplicates } = detectDuplicates(
+        categorized,
+        existingTransactions
+      );
+
+      setDuplicates(foundDuplicates);
+      setResult({
+        ...parsed,
+        newTransactions,
+        duplicateCount: foundDuplicates.length,
+      });
     } catch (err) {
       setError(err.message);
     } finally {
       setProcessing(false);
+    }
+  };
+
+  const handleSaveTransactions = async () => {
+    try {
+      setSaving(true);
+      
+      // Determine which transactions to save
+      let transactionsToSave = result.newTransactions;
+      if (duplicateAction === 'import') {
+        transactionsToSave = result.transactions;
+      }
+
+      // Save transactions to Firestore
+      await addTransactionsBatch(currentUser.uid, transactionsToSave);
+
+      // Save statement metadata
+      await addStatement(currentUser.uid, {
+        fileName: file.name,
+        fileType: result.type,
+        fileSize: result.size,
+        transactionCount: transactionsToSave.length,
+        duplicateCount: duplicates.length,
+      });
+
+      // Navigate to transactions page
+      navigate('/transactions');
+    } catch (err) {
+      console.error('Error saving transactions:', err);
+      setError('Failed to save transactions. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -174,15 +239,77 @@ function UploadStatement() {
             </div>
           )}
 
+          {/* Duplicate Warning */}
+          {duplicates.length > 0 && (
+            <div className="mt-4 p-4 bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <AlertTriangle className="w-5 h-5 text-warning-600 dark:text-warning-400 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h4 className="font-semibold text-warning-900 dark:text-warning-100 mb-2">
+                    {duplicates.length} Duplicate Transaction{duplicates.length > 1 ? 's' : ''} Found
+                  </h4>
+                  <p className="text-sm text-warning-800 dark:text-warning-200 mb-3">
+                    Some transactions appear to already exist in your records. Choose how to handle them:
+                  </p>
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="duplicateAction"
+                        value="skip"
+                        checked={duplicateAction === 'skip'}
+                        onChange={(e) => setDuplicateAction(e.target.value)}
+                        className="text-primary-600"
+                      />
+                      <span className="text-sm text-warning-900 dark:text-warning-100">
+                        Skip duplicates (import only {result.newTransactions?.length || 0} new transactions)
+                      </span>
+                    </label>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="duplicateAction"
+                        value="import"
+                        checked={duplicateAction === 'import'}
+                        onChange={(e) => setDuplicateAction(e.target.value)}
+                        className="text-primary-600"
+                      />
+                      <span className="text-sm text-warning-900 dark:text-warning-100">
+                        Import all (including {duplicates.length} duplicates)
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mt-6 flex space-x-3">
-            <button className="btn-primary flex-1">Save Transactions</button>
+            <button
+              onClick={handleSaveTransactions}
+              disabled={saving}
+              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              {saving ? (
+                <>
+                  <Loader className="w-5 h-5 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  Save {duplicateAction === 'skip' ? result.newTransactions?.length || 0 : result.transactions?.length || 0} Transactions
+                </>
+              )}
+            </button>
             <button
               onClick={() => {
                 setFile(null);
                 setResult(null);
                 setError(null);
+                setDuplicates([]);
               }}
-              className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
+              disabled={saving}
+              className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Upload Another
             </button>
