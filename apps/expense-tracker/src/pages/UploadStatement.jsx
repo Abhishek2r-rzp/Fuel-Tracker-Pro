@@ -152,7 +152,12 @@ function UploadStatement() {
         <div className="card text-center py-8">
           <Loader className="w-12 h-12 mx-auto mb-4 text-primary-600 animate-spin" />
           <p className="text-lg text-gray-700 dark:text-gray-300 font-semibold">Processing {file?.name}...</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Extracting transactions...</p>
+          <div className="mt-4 space-y-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400">⚙️ Parsing file content</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">🏷️ Auto-categorizing transactions</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">🔍 Checking for duplicates</p>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-500 mt-4">This may take a few moments...</p>
         </div>
       )}
 
@@ -287,13 +292,13 @@ function UploadStatement() {
           <div className="mt-6 flex space-x-3">
             <button
               onClick={handleSaveTransactions}
-              disabled={saving}
+              disabled={saving || processing}
               className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               {saving ? (
                 <>
                   <Loader className="w-5 h-5 mr-2 animate-spin" />
-                  Saving...
+                  Saving to database...
                 </>
               ) : (
                 <>

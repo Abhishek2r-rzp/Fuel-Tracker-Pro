@@ -86,8 +86,14 @@ export default function Analytics() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex flex-col items-center justify-center space-y-4">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
+        <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">
+          Preparing analytics...
+        </p>
+        <p className="text-gray-500 dark:text-gray-500 text-sm">
+          Calculating trends and generating charts
+        </p>
       </div>
     );
   }
