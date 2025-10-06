@@ -57,28 +57,81 @@ export function extractTransactionsFromExcel(data) {
   // Skip empty rows
   const filteredData = data.filter((row) => row && row.length > 0);
   
-  console.log('📊 Excel filtered data rows:', filteredData.length);
+  console.log("📊 Excel filtered data rows:", filteredData.length);
   
   if (filteredData.length === 0) {
     return {
       transactions: [],
       requiresManualReview: true,
-      message: 'No data found in Excel file',
+      message: "No data found in Excel file",
     };
   }
 
-  // Try to detect header row and data rows
-  const headers = filteredData[0];
-  const dataRows = filteredData.slice(1);
-  
-  console.log('📋 Excel headers:', headers);
-  console.log('📊 Excel data rows:', dataRows.length);
-  console.log('📄 First 3 data rows:', dataRows.slice(0, 3));
-
   // Look for common column names
-  const dateColumns = ['date', 'transaction date', 'txn date', 'posting date', 'value date'];
-  const descColumns = ['description', 'narration', 'particulars', 'details', 'remarks'];
-  const amountColumns = ['amount', 'debit', 'credit', 'withdrawal', 'deposit', 'dr', 'cr'];
+  const dateColumns = [
+    "date",
+    "transaction date",
+    "txn date",
+    "posting date",
+    "value date",
+  ];
+  const descColumns = [
+    "description",
+    "narration",
+    "particulars",
+    "details",
+    "remarks",
+  ];
+  const amountColumns = [
+    "amount",
+    "debit",
+    "credit",
+    "withdrawal",
+    "deposit",
+    "dr",
+    "cr",
+  ];
+
+  // Smart header detection - find the row with the most matching column names
+  let headerRowIndex = -1;
+  let bestMatchScore = 0;
+  
+  for (let i = 0; i < Math.min(20, filteredData.length); i++) {
+    const row = filteredData[i];
+    let matchScore = 0;
+    
+    row.forEach((cell) => {
+      const cellLower = String(cell).toLowerCase();
+      if (dateColumns.some((col) => cellLower.includes(col))) matchScore++;
+      if (descColumns.some((col) => cellLower.includes(col))) matchScore++;
+      if (amountColumns.some((col) => cellLower.includes(col))) matchScore++;
+    });
+    
+    if (matchScore > bestMatchScore) {
+      bestMatchScore = matchScore;
+      headerRowIndex = i;
+    }
+  }
+  
+  console.log("🔍 Found header row at index:", headerRowIndex, "with score:", bestMatchScore);
+  
+  // If no header found, return error
+  if (headerRowIndex === -1 || bestMatchScore === 0) {
+    console.log("⚠️ Could not find header row");
+    return {
+      transactions: [],
+      requiresManualReview: true,
+      message: "Could not find transaction columns. Please check if this is a bank statement.",
+    };
+  }
+
+  // Use detected header row
+  const headers = filteredData[headerRowIndex];
+  const dataRows = filteredData.slice(headerRowIndex + 1);
+  
+  console.log("📋 Excel headers:", headers);
+  console.log("📊 Excel data rows:", dataRows.length);
+  console.log("📄 First 3 data rows:", dataRows.slice(0, 3));
 
   const dateIndex = headers.findIndex((h) =>
     dateColumns.some((col) => String(h).toLowerCase().includes(col))
@@ -90,7 +143,11 @@ export function extractTransactionsFromExcel(data) {
     amountColumns.some((col) => String(h).toLowerCase().includes(col))
   );
   
-  console.log('🔍 Column indices found:', { dateIndex, descIndex, amountIndex });
+  console.log("🔍 Column indices found:", {
+    dateIndex,
+    descIndex,
+    amountIndex,
+  });
 
   // Extract transactions if columns found
   if (dateIndex >= 0 || descIndex >= 0 || amountIndex >= 0) {
