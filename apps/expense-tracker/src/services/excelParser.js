@@ -57,6 +57,8 @@ export function extractTransactionsFromExcel(data) {
   // Skip empty rows
   const filteredData = data.filter((row) => row && row.length > 0);
   
+  console.log('📊 Excel filtered data rows:', filteredData.length);
+  
   if (filteredData.length === 0) {
     return {
       transactions: [],
@@ -68,11 +70,15 @@ export function extractTransactionsFromExcel(data) {
   // Try to detect header row and data rows
   const headers = filteredData[0];
   const dataRows = filteredData.slice(1);
+  
+  console.log('📋 Excel headers:', headers);
+  console.log('📊 Excel data rows:', dataRows.length);
+  console.log('📄 First 3 data rows:', dataRows.slice(0, 3));
 
   // Look for common column names
-  const dateColumns = ['date', 'transaction date', 'txn date', 'posting date'];
-  const descColumns = ['description', 'narration', 'particulars', 'details'];
-  const amountColumns = ['amount', 'debit', 'credit', 'withdrawal', 'deposit'];
+  const dateColumns = ['date', 'transaction date', 'txn date', 'posting date', 'value date'];
+  const descColumns = ['description', 'narration', 'particulars', 'details', 'remarks'];
+  const amountColumns = ['amount', 'debit', 'credit', 'withdrawal', 'deposit', 'dr', 'cr'];
 
   const dateIndex = headers.findIndex((h) =>
     dateColumns.some((col) => String(h).toLowerCase().includes(col))
@@ -83,6 +89,8 @@ export function extractTransactionsFromExcel(data) {
   const amountIndex = headers.findIndex((h) =>
     amountColumns.some((col) => String(h).toLowerCase().includes(col))
   );
+  
+  console.log('🔍 Column indices found:', { dateIndex, descIndex, amountIndex });
 
   // Extract transactions if columns found
   if (dateIndex >= 0 || descIndex >= 0 || amountIndex >= 0) {

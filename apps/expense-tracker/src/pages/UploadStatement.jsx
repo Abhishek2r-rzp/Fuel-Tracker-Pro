@@ -32,21 +32,21 @@ function UploadStatement() {
     try {
       // Process file
       const parsed = await processFile(selectedFile);
-      console.log('📊 File processed:', parsed);
-      
+      console.log("📊 File processed:", parsed);
+
       // Check if transactions exist
       if (!parsed.transactions || !Array.isArray(parsed.transactions)) {
-        console.warn('⚠️ No transactions array found, using empty array');
+        console.warn("⚠️ No transactions array found, using empty array");
         parsed.transactions = [];
       }
-      
+
       // Categorize transactions
-      const categorized = parsed.transactions.map(txn => ({
+      const categorized = parsed.transactions.map((txn) => ({
         ...txn,
-        category: categorizeTransaction(txn.description || ''),
+        category: categorizeTransaction(txn.description || ""),
       }));
-      
-      console.log('🏷️ Categorized transactions:', categorized);
+
+      console.log("🏷️ Categorized transactions:", categorized);
 
       parsed.transactions = categorized;
 
