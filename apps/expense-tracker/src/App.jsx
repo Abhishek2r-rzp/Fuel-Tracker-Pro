@@ -1,36 +1,31 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
-import { useAuth } from '@bill-reader/shared-auth';
+import { AuthProvider, useAuth } from '@bill-reader/shared-auth';
 import { ThemeToggle } from '@bill-reader/shared-ui';
 import { Home, Upload, List, BarChart3, CreditCard, LogOut } from 'lucide-react';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import UploadStatement from './pages/UploadStatement';
 import Transactions from './pages/Transactions';
 import Analytics from './pages/Analytics';
 import CreditCards from './pages/CreditCards';
 
-function App() {
-  const { currentUser, logout } = useAuth();
+// Protected Route Component
+function ProtectedRoute({ children }) {
+  const { currentUser, loading } = useAuth();
 
-  if (!currentUser) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-app-dark">
-        <div className="card max-w-md w-full text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Authentication Required
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Please log in through the host app to access Expense Tracker.
-          </p>
-          <a
-            href="/"
-            className="btn-primary inline-block"
-          >
-            Go to Login
-          </a>
-        </div>
+      <div className="min-h-screen flex items-center justify-center dark:bg-app-dark">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
       </div>
     );
   }
+
+  return currentUser ? children : <Navigate to="/login" />;
+}
+
+function AppContent() {
+  const { currentUser, logout } = useAuth();
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
@@ -43,66 +38,71 @@ function App() {
   const handleLogout = async () => {
     try {
       await logout();
-      window.location.href = '/';
     } catch (error) {
       console.error('Failed to logout:', error);
     }
   };
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50 dark:bg-app-dark">
-        {/* Header */}
-        <header className="bg-white dark:bg-card-dark shadow-sm border-b border-gray-200 dark:border-gray-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                Expense Tracker
-              </h1>
-              <a
-                href="/"
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
-              >
-                ← Back to Apps
-              </a>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {currentUser.email}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
-            </div>
+    <div className="min-h-screen bg-app-light dark:bg-app-dark flex">
+      {/* Sidebar Navigation */}
+      <nav className="w-16 md:w-64 bg-card-light dark:bg-card-dark border-r border-light dark:border-dark flex-shrink-0">
+        <div className="p-4">
+          <h1 className="hidden md:block text-xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent mb-8">
+            Expense Tracker
+          </h1>
+          <div className="flex flex-col space-y-2">
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/20 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                >
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="hidden md:block">{item.name}</span>
+                </Link>
+              );
+            })}
           </div>
-        </header>
 
-        {/* Navigation */}
-        <nav className="bg-white dark:bg-card-dark border-b border-gray-200 dark:border-gray-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-8 overflow-x-auto">
-              {navigation.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className="flex items-center space-x-2 px-3 py-4 border-b-2 border-transparent hover:border-primary-500 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors whitespace-nowrap"
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              })}
-            </div>
+          {/* Logout Button */}
+          {currentUser && (
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center space-x-3 px-4 py-3 mt-8 rounded-lg hover:bg-error-50 dark:hover:bg-error-900/20 text-error-600 dark:text-error-400 transition-colors"
+            >
+              <LogOut className="w-5 h-5 flex-shrink-0" />
+              <span className="hidden md:block">Logout</span>
+            </button>
+          )}
+        </div>
+      </nav>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Top Bar (Mobile) */}
+        <div className="md:hidden bg-card-light dark:bg-card-dark border-b border-light dark:border-dark p-4">
+          <div className="flex items-center justify-between overflow-x-auto">
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="flex items-center space-x-2 px-3 py-4 border-b-2 border-transparent hover:border-primary-500 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors whitespace-nowrap"
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.name}</span>
+                </Link>
+              );
+            })}
           </div>
-        </nav>
+        </div>
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/upload" element={<UploadStatement />} />
@@ -111,12 +111,27 @@ function App() {
             <Route path="/cards" element={<CreditCards />} />
           </Routes>
         </main>
-
-        <ThemeToggle />
       </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/*" element={
+            <ProtectedRoute>
+              <AppContent />
+            </ProtectedRoute>
+          } />
+        </Routes>
+        <ThemeToggle />
+      </AuthProvider>
     </Router>
   );
 }
 
 export default App;
-
