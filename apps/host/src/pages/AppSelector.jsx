@@ -22,7 +22,7 @@ function AppSelector() {
       description: 'Track motorcycle fuel consumption with bill scanning',
       icon: Fuel,
       color: 'from-blue-500 to-blue-600',
-      route: '/fuel-tracker',
+      url: 'http://localhost:3001',
       available: true,
     },
     {
@@ -31,16 +31,15 @@ function AppSelector() {
       description: 'Manage expenses with PDF bank statements and credit card bills',
       icon: Receipt,
       color: 'from-purple-500 to-purple-600',
-      route: '/expense-tracker',
+      url: 'http://localhost:3002',
       available: true,
     },
   ];
 
   const handleAppClick = (app) => {
     if (app.available) {
-      // For now, navigate to placeholder pages
-      // In production, this would load the micro-frontend
-      navigate(app.route);
+      // Redirect to the app's port
+      window.location.href = app.url;
     }
   };
 
