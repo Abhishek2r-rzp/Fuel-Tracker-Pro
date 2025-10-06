@@ -10,16 +10,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bill-reader/shared-ui": "*",
     "@bill-reader/shared-auth": "*",
+    "@bill-reader/shared-ui": "*",
     "@bill-reader/shared-utils": "*",
+    "crypto-js": "^4.2.0",
     "date-fns": "^3.0.6",
     "firebase": "^10.7.1",
     "lucide-react": "^0.298.0",
+    "papaparse": "^5.5.3",
+    "pdfjs-dist": "^5.4.296",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.3.8",
     "react-router-dom": "^6.20.0",
-    "recharts": "^2.10.3"
+    "recharts": "^2.10.3",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
@@ -29,4 +34,3 @@
     "vite": "^5.0.8"
   }
 }
-
