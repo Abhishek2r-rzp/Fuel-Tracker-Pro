@@ -133,7 +133,7 @@ export function categorizeTransaction(description, amount = null) {
  * @param {Array} transactions - Array of transactions
  * @returns {Array} - Transactions with category added
  */
-export function categor izeTransactions(transactions) {
+export function categorizeTransactions(transactions) {
   return transactions.map((txn) => {
     const categoryResult = categorizeTransaction(txn.description, txn.amount);
     return {
