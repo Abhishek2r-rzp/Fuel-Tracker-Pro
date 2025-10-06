@@ -1,0 +1,30 @@
+{
+  "name": "@bill-reader/shared-ui",
+  "version": "1.0.0",
+  "description": "Shared UI components, theme, and styles for Bill Reader apps",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./theme": "./src/theme/index.js",
+    "./components": "./src/components/index.js",
+    "./styles": "./src/styles/index.css"
+  },
+  "scripts": {
+    "dev": "echo 'Shared UI - no dev server needed'",
+    "build": "echo 'Shared UI - no build needed (used directly)'",
+    "lint": "echo 'Shared UI - no linting configured yet'"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "lucide-react": "^0.298.0"
+  },
+  "keywords": [
+    "ui",
+    "components",
+    "theme",
+    "shared"
+  ]
+}
+

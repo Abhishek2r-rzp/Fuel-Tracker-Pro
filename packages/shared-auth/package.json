@@ -1,0 +1,27 @@
+{
+  "name": "@bill-reader/shared-auth",
+  "version": "1.0.0",
+  "description": "Shared Firebase authentication for Bill Reader apps",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./firebase": "./src/firebase.js",
+    "./hooks": "./src/hooks.js"
+  },
+  "scripts": {
+    "dev": "echo 'Shared Auth - no dev server needed'",
+    "build": "echo 'Shared Auth - no build needed (used directly)'",
+    "lint": "echo 'Shared Auth - no linting configured yet'"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "firebase": "^10.7.1"
+  },
+  "keywords": [
+    "auth",
+    "firebase",
+    "shared"
+  ]
+}
+
