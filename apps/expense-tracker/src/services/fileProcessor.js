@@ -14,12 +14,20 @@ export async function processFile(file) {
   try {
     // PDF
     if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
+      console.log('📄 Processing PDF file:', file.name);
       const result = await parsePDF(file);
+      console.log('✅ PDF parsed successfully:', result);
+      
+      // For now, return empty transactions array as we need bank-specific parsing
       return {
         type: 'pdf',
         fileName: file.name,
         size: file.size,
-        ...result,
+        pages: result.pages,
+        text: result.text,
+        transactions: [], // Will be populated with bank-specific parsing
+        requiresManualReview: true,
+        message: 'PDF parsed successfully. Bank-specific transaction extraction coming soon.',
       };
     }
 
