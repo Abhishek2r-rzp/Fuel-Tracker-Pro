@@ -38,16 +38,16 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-200 via-accent-100 to-secondary-200 dark:from-primary-900 dark:via-accent-900 dark:to-secondary-900 px-4 py-12">
-      <div className="max-w-md w-full bg-white dark:bg-card-dark rounded-2xl shadow-2xl p-8 border border-gray-100 dark:border-gray-800">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-200 via-accent-100 to-secondary-200 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 px-4 py-12">
+      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-100 dark:border-gray-700">
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-800/30 p-4 rounded-full mb-4 shadow-lg">
-            <Wallet className="w-12 h-12 text-primary-600 dark:text-primary-400" />
+          <div className="bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-800/50 dark:to-primary-700/50 p-4 rounded-full mb-4 shadow-lg">
+            <Wallet className="w-12 h-12 text-primary-600 dark:text-primary-300" />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-300 dark:to-accent-300 bg-clip-text text-transparent">
             Bill Reader
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
             Financial Management Suite
           </p>
         </div>
