@@ -164,3 +164,33 @@ export function findDuplicates(newTransactions, existingTransactions, threshold 
   return duplicates;
 }
 
+/**
+ * Detect duplicates and separate new transactions
+ * @param {Array} newTransactions - New transactions to check
+ * @param {Array} existingTransactions - Existing transactions
+ * @param {number} threshold - Similarity threshold
+ * @returns {object} - { newTransactions, duplicates }
+ */
+export function detectDuplicates(newTransactions, existingTransactions, threshold = 80) {
+  const duplicateMatches = findDuplicates(newTransactions, existingTransactions, threshold);
+  
+  // Get indices of duplicate transactions
+  const duplicateIndices = new Set(duplicateMatches.map((match) => match.newIndex));
+  
+  // Separate new (non-duplicate) transactions
+  const uniqueNewTransactions = newTransactions.filter((_, index) => !duplicateIndices.has(index));
+  
+  // Get duplicate transactions
+  const duplicateTransactions = duplicateMatches.map((match) => ({
+    transaction: match.newTransaction,
+    matchedWith: match.existingTransaction,
+    confidence: match.confidence,
+    reason: match.reason,
+  }));
+  
+  return {
+    newTransactions: uniqueNewTransactions,
+    duplicates: duplicateTransactions,
+  };
+}
+
