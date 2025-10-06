@@ -155,7 +155,9 @@ function Dashboard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Dashboard
+        </h1>
       </div>
 
       {/* Stats Cards */}
@@ -163,13 +165,16 @@ function Dashboard() {
         <div className="card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Avg Mileage</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
-                {stats.avgMileage} <span className="text-sm font-normal">km/l</span>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Avg Mileage
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                {stats.avgMileage}{" "}
+                <span className="text-sm font-normal">km/l</span>
               </p>
             </div>
-            <div className="bg-primary-100 p-3 rounded-full">
-              <Gauge className="w-6 h-6 text-primary-600" />
+            <div className="bg-primary-100 dark:bg-primary-900/30 p-3 rounded-full">
+              <Gauge className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
         </div>
@@ -177,13 +182,15 @@ function Dashboard() {
         <div className="card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Cost per km</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Cost per km
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                 ₹{stats.costPerKm}
               </p>
             </div>
-            <div className="bg-green-100 p-3 rounded-full">
-              <TrendingUp className="w-6 h-6 text-green-600" />
+            <div className="bg-success-100 dark:bg-success-900/30 p-3 rounded-full">
+              <TrendingUp className="w-6 h-6 text-success-600 dark:text-success-400" />
             </div>
           </div>
         </div>
@@ -191,13 +198,15 @@ function Dashboard() {
         <div className="card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Spent</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Total Spent
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                 ₹{stats.totalSpent.toFixed(2)}
               </p>
             </div>
-            <div className="bg-yellow-100 p-3 rounded-full">
-              <DollarSign className="w-6 h-6 text-yellow-600" />
+            <div className="bg-warning-100 dark:bg-warning-900/30 p-3 rounded-full">
+              <DollarSign className="w-6 h-6 text-warning-600 dark:text-warning-400" />
             </div>
           </div>
         </div>
@@ -205,13 +214,16 @@ function Dashboard() {
         <div className="card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Fuel</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
-                {stats.totalFuel.toFixed(2)} <span className="text-sm font-normal">L</span>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Total Fuel
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                {stats.totalFuel.toFixed(2)}{" "}
+                <span className="text-sm font-normal">L</span>
               </p>
             </div>
-            <div className="bg-purple-100 p-3 rounded-full">
-              <Calendar className="w-6 h-6 text-purple-600" />
+            <div className="bg-accent-100 dark:bg-accent-900/30 p-3 rounded-full">
+              <Calendar className="w-6 h-6 text-accent-600 dark:text-accent-400" />
             </div>
           </div>
         </div>
@@ -222,19 +234,21 @@ function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Mileage Trend */}
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">Mileage Trend</h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              Mileage Trend
+            </h2>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={getMileageChartData()}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="mileage" 
-                  stroke="#2563eb" 
+                <Line
+                  type="monotone"
+                  dataKey="mileage"
+                  stroke="#2563eb"
                   strokeWidth={2}
-                  dot={{ fill: '#2563eb' }}
+                  dot={{ fill: "#2563eb" }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -242,7 +256,9 @@ function Dashboard() {
 
           {/* Cost Analysis */}
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">Fuel Cost Analysis</h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              Fuel Cost Analysis
+            </h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={getCostChartData()}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -258,19 +274,24 @@ function Dashboard() {
 
       {/* Mileage Calculation Info */}
       {fuelRecords.length > 0 && fuelRecords.length < 2 && (
-        <div className="card bg-blue-50 border border-blue-200">
+        <div className="card bg-secondary-50 dark:bg-secondary-900/20 border border-secondary-200 dark:border-secondary-800">
           <div className="flex items-start space-x-3">
-            <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-secondary-600 dark:text-secondary-400 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-blue-900 mb-1">ℹ️ How to See Mileage & Cost per km</h3>
-              <p className="text-sm text-blue-800">
-                <strong>Add one more fuel record</strong> to calculate your average mileage and cost per km!
+              <h3 className="font-semibold text-secondary-900 dark:text-secondary-100 mb-1">
+                ℹ️ How to See Mileage & Cost per km
+              </h3>
+              <p className="text-sm text-secondary-800 dark:text-secondary-200">
+                <strong>Add one more fuel record</strong> to calculate your
+                average mileage and cost per km!
               </p>
-              <p className="text-sm text-blue-700 mt-2">
-                📊 <strong>Calculation:</strong> Mileage = (Current Odometer - Previous Odometer) ÷ Fuel Volume
+              <p className="text-sm text-secondary-700 dark:text-secondary-300 mt-2">
+                📊 <strong>Calculation:</strong> Mileage = (Current Odometer -
+                Previous Odometer) ÷ Fuel Volume
               </p>
-              <p className="text-sm text-blue-700 mt-1">
-                💰 <strong>Cost per km:</strong> Total Amount ÷ Distance Traveled
+              <p className="text-sm text-secondary-700 dark:text-secondary-300 mt-1">
+                💰 <strong>Cost per km:</strong> Total Amount ÷ Distance
+                Traveled
               </p>
             </div>
           </div>
@@ -280,47 +301,52 @@ function Dashboard() {
       {/* Recent Records */}
       {fuelRecords.length > 0 && (
         <div className="card">
-          <h2 className="text-xl font-semibold mb-4">Recent Fuel Records</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+            Recent Fuel Records
+          </h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Fuel Volume
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Odometer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-card-dark divide-y divide-gray-200 dark:divide-gray-700">
                 {fuelRecords.slice(0, 5).map((record) => (
-                  <tr key={record.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {format(new Date(record.date), 'MMM dd, yyyy')}
+                  <tr
+                    key={record.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                      {format(new Date(record.date), "MMM dd, yyyy")}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       {record.fuelVolume} L
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       ₹{record.amount}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       {record.odometerReading} km
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                       <button
                         onClick={() => handleDelete(record.id)}
-                        className="text-red-600 hover:text-red-800 transition-colors inline-flex items-center space-x-1"
+                        className="text-error-600 dark:text-error-400 hover:text-error-800 dark:hover:text-error-300 transition-colors inline-flex items-center space-x-1"
                         title="Delete record"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -337,7 +363,9 @@ function Dashboard() {
 
       {fuelRecords.length === 0 && (
         <div className="card text-center py-12">
-          <p className="text-gray-500 text-lg">No fuel records yet. Start by scanning a bill!</p>
+          <p className="text-gray-500 dark:text-gray-400 text-lg">
+            No fuel records yet. Start by scanning a bill!
+          </p>
         </div>
       )}
     </div>

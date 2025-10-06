@@ -130,7 +130,7 @@ function FuelHistory() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Fuel History</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Fuel History</h1>
       </div>
 
       {/* Station Info Notice */}
@@ -142,7 +142,7 @@ function FuelHistory() {
               <p className="text-blue-900 font-medium mb-1">
                 ℹ️ Station Information
               </p>
-              <p className="text-blue-800">
+              <p className="text-blue-800 dark:text-blue-200">
                 Station names and addresses are automatically extracted from
                 scanned bills using OCR. Your current records show "No station
                 info" because they were added before this feature was enabled.
@@ -244,10 +244,10 @@ function FuelHistory() {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredRecords.map((record, index) => (
                 <tr key={record.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {format(new Date(record.date), "MMM dd, yyyy HH:mm")}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
                     {record.stationName ? (
                       <div>
                         <div className="font-medium">{record.stationName}</div>
@@ -263,7 +263,7 @@ function FuelHistory() {
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
                         record.fuelType === "Petrol"
@@ -274,16 +274,16 @@ function FuelHistory() {
                       {record.fuelType}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {record.fuelVolume}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     ₹{record.amount.toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {record.odometerReading}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {calculateMileage(index)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -313,7 +313,7 @@ function FuelHistory() {
 
           {filteredRecords.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500">No records found</p>
+              <p className="text-gray-500 dark:text-gray-400">No records found</p>
             </div>
           )}
         </div>

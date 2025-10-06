@@ -179,7 +179,7 @@ function AddManual() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Add Fuel Record Manually</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Add Fuel Record Manually</h1>
         <button
           onClick={() => navigate('/scan')}
           className="text-primary-600 hover:text-primary-700 font-medium"
@@ -201,7 +201,7 @@ function AddManual() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Date <span className="text-red-500">*</span>
               </label>
               <input
@@ -215,7 +215,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Time
               </label>
               <input
@@ -228,7 +228,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Fuel Type <span className="text-red-500">*</span>
               </label>
               <select
@@ -246,7 +246,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Fuel Volume (Liters) <span className="text-red-500">*</span>
               </label>
               <input
@@ -262,7 +262,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Total Amount (₹) <span className="text-red-500">*</span>
               </label>
               <input
@@ -278,7 +278,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Price per Liter (₹)
               </label>
               <input
@@ -295,7 +295,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Odometer Reading (km) <span className="text-red-500">*</span>
               </label>
               <input
@@ -317,7 +317,7 @@ function AddManual() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Station Name
               </label>
               <input
@@ -331,7 +331,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Payment Method
               </label>
               <select
@@ -349,7 +349,7 @@ function AddManual() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Station Address
               </label>
               <textarea
@@ -370,7 +370,7 @@ function AddManual() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Invoice Number
               </label>
               <input
@@ -384,7 +384,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Pump Number
               </label>
               <input
@@ -398,7 +398,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Vehicle Number
               </label>
               <input
@@ -412,7 +412,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Attendant Name
               </label>
               <input
@@ -426,7 +426,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Tax Amount (₹)
               </label>
               <input
@@ -441,7 +441,7 @@ function AddManual() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Discount Amount (₹)
               </label>
               <input
@@ -456,7 +456,7 @@ function AddManual() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Notes
               </label>
               <textarea
@@ -480,7 +480,7 @@ function AddManual() {
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <Upload className="w-10 h-10 text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600">Click to upload receipt image</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Click to upload receipt image</p>
                   <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
                 </div>
                 <input

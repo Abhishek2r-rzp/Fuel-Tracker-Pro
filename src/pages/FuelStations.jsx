@@ -101,8 +101,8 @@ function FuelStations() {
               <Fuel className="w-8 h-8 text-primary-600" />
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900">{selectedStation.name}</h1>
-              <div className="flex items-start space-x-2 mt-2 text-gray-600">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{selectedStation.name}</h1>
+              <div className="flex items-start space-x-2 mt-2 text-gray-600 dark:text-gray-300">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <p className="text-sm">{selectedStation.address}</p>
               </div>
@@ -112,15 +112,15 @@ function FuelStations() {
           {/* Station Stats */}
           <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
             <div>
-              <p className="text-sm text-gray-600">Total Visits</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Total Visits</p>
               <p className="text-2xl font-bold text-gray-900 mt-1">{selectedStation.visits.length}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Spent</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Total Spent</p>
               <p className="text-2xl font-bold text-gray-900 mt-1">₹{selectedStation.totalSpent.toFixed(2)}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Fuel</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Total Fuel</p>
               <p className="text-2xl font-bold text-gray-900 mt-1">{selectedStation.totalFuel.toFixed(2)} L</p>
             </div>
           </div>
@@ -134,7 +134,7 @@ function FuelStations() {
               <div key={record.id} className="border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition-colors">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <p className="font-semibold text-gray-900">
+                    <p className="font-semibold text-gray-900 dark:text-white">
                       {format(new Date(record.date), 'EEEE, MMMM dd, yyyy')}
                     </p>
                     {record.time && (
@@ -145,44 +145,44 @@ function FuelStations() {
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-bold text-gray-900">₹{record.amount}</p>
-                    <p className="text-sm text-gray-600">{record.fuelVolume} L</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">₹{record.amount}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{record.fuelVolume} L</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                   <div>
-                    <p className="text-gray-600">Fuel Type</p>
-                    <p className="font-medium text-gray-900">{record.fuelType || 'N/A'}</p>
+                    <p className="text-gray-600 dark:text-gray-300">Fuel Type</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{record.fuelType || 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-gray-600">Price/L</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-gray-600 dark:text-gray-300">Price/L</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
                       {record.pricePerLiter ? `₹${record.pricePerLiter}` : 'N/A'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-gray-600">Odometer</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-gray-600 dark:text-gray-300">Odometer</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
                       {record.odometerReading ? `${record.odometerReading} km` : 'N/A'}
                     </p>
                   </div>
                   {record.pumpNumber && (
                     <div>
-                      <p className="text-gray-600">Pump No.</p>
-                      <p className="font-medium text-gray-900">{record.pumpNumber}</p>
+                      <p className="text-gray-600 dark:text-gray-300">Pump No.</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{record.pumpNumber}</p>
                     </div>
                   )}
                   {record.invoiceNumber && (
                     <div>
-                      <p className="text-gray-600">Invoice</p>
-                      <p className="font-medium text-gray-900">{record.invoiceNumber}</p>
+                      <p className="text-gray-600 dark:text-gray-300">Invoice</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{record.invoiceNumber}</p>
                     </div>
                   )}
                   {record.paymentMethod && (
                     <div>
-                      <p className="text-gray-600">Payment</p>
-                      <p className="font-medium text-gray-900">{record.paymentMethod}</p>
+                      <p className="text-gray-600 dark:text-gray-300">Payment</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{record.paymentMethod}</p>
                     </div>
                   )}
                 </div>
@@ -198,7 +198,7 @@ function FuelStations() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Fuel Stations</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Fuel Stations</h1>
       </div>
 
       {stations.length === 0 ? (
@@ -223,29 +223,29 @@ function FuelStations() {
                   <h3 className="text-lg font-semibold text-gray-900 truncate">
                     {station.name}
                   </h3>
-                  <div className="flex items-start space-x-2 mt-1 text-gray-600">
+                  <div className="flex items-start space-x-2 mt-1 text-gray-600 dark:text-gray-300">
                     <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <p className="text-sm line-clamp-2">{station.address}</p>
                   </div>
                   
                   <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-gray-100">
                     <div>
-                      <p className="text-xs text-gray-600">Visits</p>
-                      <p className="text-lg font-bold text-gray-900">{station.visits.length}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">Visits</p>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">{station.visits.length}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600">Spent</p>
-                      <p className="text-lg font-bold text-gray-900">₹{station.totalSpent.toFixed(0)}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">Spent</p>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">₹{station.totalSpent.toFixed(0)}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600">Fuel</p>
-                      <p className="text-lg font-bold text-gray-900">{station.totalFuel.toFixed(1)}L</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">Fuel</p>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">{station.totalFuel.toFixed(1)}L</p>
                     </div>
                   </div>
 
                   {station.lastVisit && (
                     <div className="mt-3 pt-3 border-t border-gray-100">
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         Last visit: {format(new Date(station.lastVisit), 'MMM dd, yyyy')}
                       </p>
                     </div>

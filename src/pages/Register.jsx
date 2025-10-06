@@ -36,25 +36,32 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-200 via-accent-100 to-secondary-200 dark:from-primary-900 dark:via-accent-900 dark:to-secondary-900 px-4 py-12">
+      <div className="max-w-md w-full bg-white dark:bg-card-dark rounded-2xl shadow-2xl p-8 border border-gray-100 dark:border-gray-800">
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-primary-100 p-4 rounded-full mb-4">
-            <Fuel className="w-12 h-12 text-primary-600" />
+          <div className="bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-800/30 p-4 rounded-full mb-4 shadow-lg">
+            <Fuel className="w-12 h-12 text-primary-600 dark:text-primary-400" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Fuel Tracker Pro</h1>
-          <p className="text-gray-600 mt-2">Create your account</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent">
+            Fuel Tracker Pro
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-2">
+            Create your account
+          </p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
+          <div className="bg-error-50 dark:bg-error-900/20 border border-error-200 dark:border-error-800 text-error-600 dark:text-error-400 p-3 rounded-lg mb-4 text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Email Address
             </label>
             <input
@@ -69,7 +76,10 @@ function Register() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Password
             </label>
             <input
@@ -84,7 +94,10 @@ function Register() {
           </div>
 
           <div>
-            <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="confirm-password"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Confirm Password
             </label>
             <input
@@ -103,14 +116,17 @@ function Register() {
             disabled={loading}
             className="w-full btn-primary py-3 text-lg font-semibold"
           >
-            {loading ? 'Creating account...' : 'Sign Up'}
+            {loading ? "Creating account..." : "Sign Up"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="text-primary-600 hover:text-primary-700 font-semibold">
+          <p className="text-gray-600 dark:text-gray-300">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition-colors"
+            >
               Sign In
             </Link>
           </p>

@@ -335,32 +335,36 @@ function ScanBill() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Scan Fuel Bill</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        Scan Fuel Bill
+      </h1>
 
       {/* Extraction Status */}
       {extractedData && missingFields.length === 0 && !saving && (
-        <div className="card bg-green-50 border border-green-200">
+        <div className="card bg-success-50 dark:bg-success-900/20 border border-success-200 dark:border-success-800">
           <div className="flex items-center space-x-3">
-            <CheckCircle className="w-6 h-6 text-green-600" />
+            <CheckCircle className="w-6 h-6 text-success-600 dark:text-success-400" />
             <div>
-              <h3 className="text-lg font-semibold text-green-900">
+              <h3 className="text-lg font-semibold text-success-900 dark:text-success-100">
                 All Data Extracted Successfully!
               </h3>
-              <p className="text-green-700">Saving automatically...</p>
+              <p className="text-success-700 dark:text-success-300">
+                Saving automatically...
+              </p>
             </div>
           </div>
         </div>
       )}
 
       {missingFields.length > 0 && (
-        <div className="card bg-yellow-50 border border-yellow-200">
+        <div className="card bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800">
           <div className="flex items-center space-x-3">
-            <AlertCircle className="w-6 h-6 text-yellow-600" />
+            <AlertCircle className="w-6 h-6 text-warning-600 dark:text-warning-400" />
             <div>
-              <h3 className="text-lg font-semibold text-yellow-900">
+              <h3 className="text-lg font-semibold text-warning-900 dark:text-warning-100">
                 Additional Information Needed
               </h3>
-              <p className="text-yellow-700">
+              <p className="text-warning-700 dark:text-warning-300">
                 Please fill in the following required fields:{" "}
                 {missingFields.join(", ")}
               </p>
@@ -372,7 +376,9 @@ function ScanBill() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Image Upload Section */}
         <div className="card">
-          <h2 className="text-xl font-semibold mb-4">Capture Bill</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+            Capture Bill
+          </h2>
 
           {!preview ? (
             <div className="space-y-4">
@@ -403,7 +409,7 @@ function ScanBill() {
                 className="hidden"
               />
 
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
                 Capture or upload a clear photo of your fuel bill
               </p>
             </div>
@@ -451,17 +457,17 @@ function ScanBill() {
         {/* Form Section - Only show if there are missing fields or manual entry */}
         {(showForm || preview) && (
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
               {missingFields.length > 0
                 ? "Complete Missing Information"
                 : "Fuel Details"}
             </h2>
 
             {extractedData && (
-              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="mb-4 p-4 bg-success-50 dark:bg-success-900/20 border border-success-200 dark:border-success-800 rounded-lg">
                 <div className="flex items-center space-x-2 mb-3">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                  <h3 className="font-semibold text-green-900">
+                  <CheckCircle className="w-5 h-5 text-success-600 dark:text-success-400" />
+                  <h3 className="font-semibold text-success-900 dark:text-success-100">
                     ✓ Extracted{" "}
                     {
                       Object.keys(extractedData).filter(
@@ -475,128 +481,160 @@ function ScanBill() {
                 <div className="space-y-2 text-sm">
                   {extractedData.date && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Date</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Date
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.date}
                       </span>
                     </div>
                   )}
                   {extractedData.time && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Time</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Time
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.time}
                       </span>
                     </div>
                   )}
                   {extractedData.amount && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Amount</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Amount
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         ₹{extractedData.amount}
                       </span>
                     </div>
                   )}
                   {extractedData.fuelVolume && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Fuel Volume</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Fuel Volume
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.fuelVolume}L
                       </span>
                     </div>
                   )}
                   {extractedData.pricePerLiter && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Price per Liter</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Price per Liter
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         ₹{extractedData.pricePerLiter}
                       </span>
                     </div>
                   )}
                   {extractedData.fuelType && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Fuel Type</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Fuel Type
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.fuelType}
                       </span>
                     </div>
                   )}
                   {extractedData.stationName && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Station Name</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Station Name
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.stationName}
                       </span>
                     </div>
                   )}
                   {extractedData.stationAddress && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Station Address</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Station Address
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.stationAddress}
                       </span>
                     </div>
                   )}
                   {extractedData.pumpNumber && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Pump Number</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Pump Number
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.pumpNumber}
                       </span>
                     </div>
                   )}
                   {extractedData.invoiceNumber && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Invoice Number</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Invoice Number
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.invoiceNumber}
                       </span>
                     </div>
                   )}
                   {extractedData.paymentMethod && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Payment Method</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Payment Method
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.paymentMethod}
                       </span>
                     </div>
                   )}
                   {extractedData.fuelGrade && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Fuel Grade</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Fuel Grade
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.fuelGrade}
                       </span>
                     </div>
                   )}
                   {extractedData.vehicleNumber && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Vehicle Number</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Vehicle Number
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.vehicleNumber}
                       </span>
                     </div>
                   )}
                   {extractedData.attendantName && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Attendant Name</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Attendant Name
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {extractedData.attendantName}
                       </span>
                     </div>
                   )}
                   {extractedData.taxAmount && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Tax Amount</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Tax Amount
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         ₹{extractedData.taxAmount}
                       </span>
                     </div>
                   )}
                   {extractedData.discountAmount && (
                     <div className="flex items-center justify-between py-2 border-b border-green-100">
-                      <span className="text-gray-600">Discount</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Discount
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         ₹{extractedData.discountAmount}
                       </span>
                     </div>
@@ -609,7 +647,7 @@ function ScanBill() {
               {/* Only show fields that are missing or need verification */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Date{" "}
                     {!missingFields.includes("date") && (
                       <span className="text-green-600">✓</span>
@@ -628,7 +666,7 @@ function ScanBill() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Time{" "}
                     {formData.time && <span className="text-green-600">✓</span>}
                   </label>
@@ -643,7 +681,7 @@ function ScanBill() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Fuel Type{" "}
                   {formData.fuelType && (
                     <span className="text-green-600">✓</span>
@@ -662,7 +700,7 @@ function ScanBill() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Fuel Volume (Liters){" "}
                   {!missingFields.includes("fuelVolume") &&
                     formData.fuelVolume && (
@@ -686,7 +724,7 @@ function ScanBill() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Total Amount (₹){" "}
                   {!missingFields.includes("amount") && formData.amount && (
                     <span className="text-green-600">✓</span>
@@ -707,7 +745,7 @@ function ScanBill() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Odometer Reading (km){" "}
                   {!missingFields.includes("odometerReading") &&
                     formData.odometerReading && (
@@ -732,7 +770,7 @@ function ScanBill() {
 
               {/* Optional Station Information */}
               <div className="pt-4 border-t border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
                   <span>🏪 Fuel Station (Optional)</span>
                   {formData.stationName && (
                     <span className="ml-2 text-green-600 text-xs">
@@ -743,7 +781,7 @@ function ScanBill() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Station Name{" "}
                       {formData.stationName && (
                         <span className="text-green-600">✓</span>
@@ -763,7 +801,7 @@ function ScanBill() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Station Address{" "}
                       {formData.stationAddress && (
                         <span className="text-green-600">✓</span>
@@ -790,16 +828,16 @@ function ScanBill() {
                 formData.paymentMethod ||
                 formData.pricePerLiter) && (
                 <div className="pt-4 border-t border-gray-200">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                     📋 Other Details Extracted
                   </h3>
-                  <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
+                  <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 dark:text-gray-300">
                     {formData.pricePerLiter && (
                       <div>
                         <span className="font-medium text-gray-700">
                           Price/Liter:
                         </span>
-                        <p className="text-gray-900">
+                        <p className="text-gray-900 dark:text-white">
                           ₹{formData.pricePerLiter}
                         </p>
                       </div>
@@ -809,7 +847,7 @@ function ScanBill() {
                         <span className="font-medium text-gray-700">
                           Invoice #:
                         </span>
-                        <p className="text-gray-900">
+                        <p className="text-gray-900 dark:text-white">
                           {formData.invoiceNumber}
                         </p>
                       </div>
@@ -819,7 +857,9 @@ function ScanBill() {
                         <span className="font-medium text-gray-700">
                           Pump #:
                         </span>
-                        <p className="text-gray-900">{formData.pumpNumber}</p>
+                        <p className="text-gray-900 dark:text-white">
+                          {formData.pumpNumber}
+                        </p>
                       </div>
                     )}
                     {formData.paymentMethod && (
@@ -827,7 +867,7 @@ function ScanBill() {
                         <span className="font-medium text-gray-700">
                           Payment:
                         </span>
-                        <p className="text-gray-900">
+                        <p className="text-gray-900 dark:text-white">
                           {formData.paymentMethod}
                         </p>
                       </div>

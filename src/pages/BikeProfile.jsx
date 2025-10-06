@@ -174,7 +174,7 @@ function BikeProfile() {
         <div className="bg-primary-100 p-3 rounded-full">
           <Bike className="w-8 h-8 text-primary-600" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-900">My Bike Profile</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Bike Profile</h1>
       </div>
 
       {/* User Information Card */}
@@ -184,17 +184,17 @@ function BikeProfile() {
           Account Information
         </h2>
         <div className="space-y-3">
-          <div className="flex items-center text-gray-700">
+          <div className="flex items-center text-gray-700 dark:text-gray-300">
             <Mail className="w-4 h-4 mr-3 text-primary-600" />
             <span className="font-medium mr-2">Email:</span>
             <span>{currentUser?.email}</span>
           </div>
-          <div className="flex items-center text-gray-700">
+          <div className="flex items-center text-gray-700 dark:text-gray-300">
             <Calendar className="w-4 h-4 mr-3 text-primary-600" />
             <span className="font-medium mr-2">Member since:</span>
             <span>{currentUser?.metadata?.creationTime ? new Date(currentUser.metadata.creationTime).toLocaleDateString() : 'N/A'}</span>
           </div>
-          <div className="flex items-center text-gray-700">
+          <div className="flex items-center text-gray-700 dark:text-gray-300">
             <User className="w-4 h-4 mr-3 text-primary-600" />
             <span className="font-medium mr-2">User ID:</span>
             <span className="text-sm font-mono bg-white px-2 py-1 rounded">{currentUser?.uid?.substring(0, 12)}...</span>
@@ -206,7 +206,7 @@ function BikeProfile() {
       {hasSavedBike && !showForm && (
         <div className="card">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">My Saved Bike</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Saved Bike</h2>
             <button
               onClick={handleAddNewBike}
               className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center space-x-2"
@@ -219,33 +219,33 @@ function BikeProfile() {
           <div className="grid grid-cols-2 gap-6">
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600 mb-1">Make / Brand</p>
-              <p className="text-lg font-semibold text-gray-900">{bikeData.make}</p>
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">{bikeData.make}</p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600 mb-1">Model</p>
-              <p className="text-lg font-semibold text-gray-900">{bikeData.model}</p>
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">{bikeData.model}</p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600 mb-1">Year</p>
-              <p className="text-lg font-semibold text-gray-900">{bikeData.year}</p>
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">{bikeData.year}</p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600 mb-1">Engine Capacity</p>
-              <p className="text-lg font-semibold text-gray-900">{bikeData.engineCapacity} cc</p>
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">{bikeData.engineCapacity} cc</p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600 mb-1">Fuel Tank Capacity</p>
-              <p className="text-lg font-semibold text-gray-900">{bikeData.fuelCapacity} L</p>
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">{bikeData.fuelCapacity} L</p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600 mb-1">Claimed Mileage</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">
                 {bikeData.mileageStandard !== 'N/A' ? `${bikeData.mileageStandard} km/l` : 'N/A'}
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg col-span-2">
               <p className="text-sm text-gray-600 mb-1">Fuel Type</p>
-              <p className="text-lg font-semibold text-gray-900">{bikeData.fuelType}</p>
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">{bikeData.fuelType}</p>
             </div>
           </div>
         </div>
@@ -255,7 +255,7 @@ function BikeProfile() {
       {showForm && (
         <div className="card">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               {hasSavedBike ? 'Edit Bike Profile' : 'Add Your Bike'}
             </h2>
             {hasSavedBike && (
@@ -345,20 +345,20 @@ function BikeProfile() {
               
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-gray-700">Engine Capacity:</span>
-                  <p className="text-gray-900">{bikeData.engineCapacity} cc</p>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Engine Capacity:</span>
+                  <p className="text-gray-900 dark:text-white">{bikeData.engineCapacity} cc</p>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Fuel Tank:</span>
-                  <p className="text-gray-900">{bikeData.fuelCapacity} L</p>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Fuel Tank:</span>
+                  <p className="text-gray-900 dark:text-white">{bikeData.fuelCapacity} L</p>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Claimed Mileage:</span>
-                  <p className="text-gray-900">{bikeData.mileageStandard} km/l</p>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Claimed Mileage:</span>
+                  <p className="text-gray-900 dark:text-white">{bikeData.mileageStandard} km/l</p>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Fuel Type:</span>
-                  <p className="text-gray-900">{bikeData.fuelType}</p>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Fuel Type:</span>
+                  <p className="text-gray-900 dark:text-white">{bikeData.fuelType}</p>
                 </div>
               </div>
             </div>
