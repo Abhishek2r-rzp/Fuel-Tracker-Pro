@@ -7,8 +7,10 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 backdrop-blur-sm"
+      className="fixed z-50 p-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 backdrop-blur-sm"
       style={{
+        bottom: '24px',
+        right: '24px',
         background: theme === 'light' 
           ? 'linear-gradient(135deg, #E9D5FF 0%, #DDD6FE 100%)'
           : 'linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)',
