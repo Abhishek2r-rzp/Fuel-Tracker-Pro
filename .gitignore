@@ -156,6 +156,9 @@ temp/
 *.tmp
 *.temp
 
+# Turborepo
+.turbo/
+
 # Lock files (keep package-lock.json for consistency)
 # Uncomment if you prefer not to commit lock files
 # package-lock.json
