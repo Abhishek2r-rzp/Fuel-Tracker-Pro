@@ -22,6 +22,23 @@ const COLLECTIONS = {
 };
 
 /**
+ * Clean transaction data - remove undefined values
+ * @param {Object} transaction - Transaction data
+ * @returns {Object} - Cleaned transaction
+ */
+function cleanTransactionData(transaction) {
+  const cleaned = {};
+  Object.keys(transaction).forEach((key) => {
+    const value = transaction[key];
+    // Only include defined values (but allow null, 0, false, empty string)
+    if (value !== undefined) {
+      cleaned[key] = value;
+    }
+  });
+  return cleaned;
+}
+
+/**
  * Add a new transaction
  * @param {string} userId - User ID
  * @param {Object} transaction - Transaction data
@@ -29,9 +46,10 @@ const COLLECTIONS = {
  */
 export async function addTransaction(userId, transaction) {
   try {
+    const cleanedTransaction = cleanTransactionData(transaction);
     const docRef = await addDoc(collection(db, COLLECTIONS.TRANSACTIONS), {
       userId,
-      ...transaction,
+      ...cleanedTransaction,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -50,18 +68,21 @@ export async function addTransaction(userId, transaction) {
  */
 export async function addTransactionsBatch(userId, transactions) {
   try {
-    const promises = transactions.map((transaction) =>
-      addDoc(collection(db, COLLECTIONS.TRANSACTIONS), {
+    console.log('💾 Saving batch of', transactions.length, 'transactions');
+    const promises = transactions.map((transaction) => {
+      const cleanedTransaction = cleanTransactionData(transaction);
+      return addDoc(collection(db, COLLECTIONS.TRANSACTIONS), {
         userId,
-        ...transaction,
+        ...cleanedTransaction,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      })
-    );
+      });
+    });
     const results = await Promise.all(promises);
+    console.log('✅ Successfully saved', results.length, 'transactions');
     return results.map((docRef) => docRef.id);
   } catch (error) {
-    console.error('Error adding transactions batch:', error);
+    console.error('❌ Error adding transactions batch:', error);
     throw error;
   }
 }

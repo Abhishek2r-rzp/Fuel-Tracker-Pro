@@ -58,7 +58,7 @@ export function extractTransactionsFromExcel(data) {
   const filteredData = data.filter((row) => row && row.length > 0);
   
   console.log("📊 Excel filtered data rows:", filteredData.length);
-  
+
   if (filteredData.length === 0) {
     return {
       transactions: [],
@@ -95,33 +95,39 @@ export function extractTransactionsFromExcel(data) {
   // Smart header detection - find the row with the most matching column names
   let headerRowIndex = -1;
   let bestMatchScore = 0;
-  
+
   for (let i = 0; i < Math.min(20, filteredData.length); i++) {
     const row = filteredData[i];
     let matchScore = 0;
-    
+
     row.forEach((cell) => {
       const cellLower = String(cell).toLowerCase();
       if (dateColumns.some((col) => cellLower.includes(col))) matchScore++;
       if (descColumns.some((col) => cellLower.includes(col))) matchScore++;
       if (amountColumns.some((col) => cellLower.includes(col))) matchScore++;
     });
-    
+
     if (matchScore > bestMatchScore) {
       bestMatchScore = matchScore;
       headerRowIndex = i;
     }
   }
-  
-  console.log("🔍 Found header row at index:", headerRowIndex, "with score:", bestMatchScore);
-  
+
+  console.log(
+    "🔍 Found header row at index:",
+    headerRowIndex,
+    "with score:",
+    bestMatchScore
+  );
+
   // If no header found, return error
   if (headerRowIndex === -1 || bestMatchScore === 0) {
     console.log("⚠️ Could not find header row");
     return {
       transactions: [],
       requiresManualReview: true,
-      message: "Could not find transaction columns. Please check if this is a bank statement.",
+      message:
+        "Could not find transaction columns. Please check if this is a bank statement.",
     };
   }
 
@@ -142,7 +148,7 @@ export function extractTransactionsFromExcel(data) {
   const amountIndex = headers.findIndex((h) =>
     amountColumns.some((col) => String(h).toLowerCase().includes(col))
   );
-  
+
   console.log("🔍 Column indices found:", {
     dateIndex,
     descIndex,
