@@ -255,14 +255,14 @@ function UploadStatement() {
 
           {/* Duplicate Warning */}
           {duplicates.length > 0 && (
-            <div className="mt-4 p-4 bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800 rounded-lg">
+            <div className="mt-4 p-4 bg-warning-50 dark:bg-warning-900/30 border border-warning-200 dark:border-warning-700 rounded-lg">
               <div className="flex items-start space-x-3">
-                <AlertTriangle className="w-5 h-5 text-warning-600 dark:text-warning-400 flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-5 h-5 text-warning-600 dark:text-warning-300 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h4 className="font-semibold text-warning-900 dark:text-warning-100 mb-2">
+                  <h4 className="font-semibold text-warning-900 dark:text-white mb-2">
                     {duplicates.length} Duplicate Transaction{duplicates.length > 1 ? 's' : ''} Found
                   </h4>
-                  <p className="text-sm text-warning-800 dark:text-warning-200 mb-3">
+                  <p className="text-sm text-warning-800 dark:text-gray-200 mb-3">
                     Some transactions appear to already exist in your records. Choose how to handle them:
                   </p>
                   <div className="space-y-2">
@@ -275,7 +275,7 @@ function UploadStatement() {
                         onChange={(e) => setDuplicateAction(e.target.value)}
                         className="text-primary-600"
                       />
-                      <span className="text-sm text-warning-900 dark:text-warning-100">
+                      <span className="text-sm text-warning-900 dark:text-gray-100">
                         Skip duplicates (import only {result.newTransactions?.length || 0} new transactions)
                       </span>
                     </label>
@@ -288,7 +288,7 @@ function UploadStatement() {
                         onChange={(e) => setDuplicateAction(e.target.value)}
                         className="text-primary-600"
                       />
-                      <span className="text-sm text-warning-900 dark:text-warning-100">
+                      <span className="text-sm text-warning-900 dark:text-gray-100">
                         Import all (including {duplicates.length} duplicates)
                       </span>
                     </label>
