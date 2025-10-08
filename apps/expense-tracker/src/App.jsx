@@ -231,8 +231,8 @@ function App() {
   const basename =
     import.meta.env.MODE === "production" ? "/expense-tracker" : "";
   return (
-    <Router basename={basename}>
-      <AuthProvider>
+    <AuthProvider>
+      <Router basename={basename}>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route
@@ -245,8 +245,8 @@ function App() {
             />
           </Routes>
         </Suspense>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 

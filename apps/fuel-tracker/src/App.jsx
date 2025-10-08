@@ -36,8 +36,8 @@ function ProtectedRoute({ children }) {
 function App() {
   const basename = import.meta.env.MODE === "production" ? "/fuel-tracker" : "";
   return (
-    <Router basename={basename}>
-      <AuthProvider>
+    <AuthProvider>
+      <Router basename={basename}>
         <ProtectedRoute>
           <Layout>
             <Routes>
@@ -51,8 +51,8 @@ function App() {
             </Routes>
           </Layout>
         </ProtectedRoute>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
