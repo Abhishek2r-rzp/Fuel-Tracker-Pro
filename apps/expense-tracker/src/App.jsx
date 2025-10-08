@@ -233,18 +233,11 @@ function App() {
   return (
     <AuthProvider>
       <Router basename={basename}>
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes>
-            <Route
-              path="/*"
-              element={
-                <ProtectedRoute>
-                  <AppContent />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Suspense>
+        <ProtectedRoute>
+          <Suspense fallback={<LoadingFallback />}>
+            <AppContent />
+          </Suspense>
+        </ProtectedRoute>
       </Router>
     </AuthProvider>
   );
