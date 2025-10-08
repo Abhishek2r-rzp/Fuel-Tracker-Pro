@@ -33,6 +33,9 @@ jspm_packages/
 # Optional eslint cache
 .eslintcache
 
+# Prettier cache
+.prettiercache
+
 # Optional REPL history
 .node_repl_history
 

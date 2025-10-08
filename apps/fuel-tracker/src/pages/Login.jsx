@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@bill-reader/shared-auth';
-import { Fuel } from 'lucide-react';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@bill-reader/shared-auth";
+import { Fuel } from "lucide-react";
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -15,12 +15,12 @@ function Login() {
     e.preventDefault();
 
     try {
-      setError('');
+      setError("");
       setLoading(true);
       await login(email, password);
-      navigate('/');
+      navigate("/");
     } catch (err) {
-      setError('Failed to sign in: ' + err.message);
+      setError("Failed to sign in: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ function Login() {
 
         <div className="mt-6 text-center">
           <p className="text-gray-600 dark:text-gray-300">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               to="/register"
               className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition-colors"
@@ -110,4 +110,3 @@ function Login() {
 }
 
 export default Login;
-

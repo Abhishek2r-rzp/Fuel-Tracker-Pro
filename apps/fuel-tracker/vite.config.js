@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
-import path from 'path';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
+import path from "path";
 
 export default defineConfig({
-  envDir: path.resolve(__dirname, '../../'), // Load .env from monorepo root
+  envDir: path.resolve(__dirname, "../../"), // Load .env from monorepo root
   plugins: [
     react(),
     VitePWA({
@@ -155,4 +155,3 @@ export default defineConfig({
     },
   },
 });
-

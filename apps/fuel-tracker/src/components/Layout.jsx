@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '@bill-reader/shared-auth';
-import { ThemeToggle } from '@bill-reader/shared-ui';
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@bill-reader/shared-auth";
+import { ThemeToggle } from "@bill-reader/shared-ui";
 import {
   LayoutDashboard,
   ScanLine,
@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   PlusCircle,
+  Mail,
 } from "lucide-react";
 
 function Layout({ children }) {
@@ -23,9 +24,9 @@ function Layout({ children }) {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
-      console.error('Failed to logout:', error);
+      console.error("Failed to logout:", error);
     }
   };
 
@@ -36,6 +37,7 @@ function Layout({ children }) {
     { path: "/history", icon: History, label: "History" },
     { path: "/stations", icon: MapPin, label: "Stations" },
     { path: "/bike", icon: Bike, label: "My Bike" },
+    { path: "/contact", icon: Mail, label: "Contact" },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -135,4 +137,3 @@ function Layout({ children }) {
 }
 
 export default Layout;
-

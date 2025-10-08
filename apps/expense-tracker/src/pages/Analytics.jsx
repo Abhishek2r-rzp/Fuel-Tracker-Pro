@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@bill-reader/shared-auth';
+import { useState, useEffect } from "react";
+import { useAuth } from "@bill-reader/shared-auth";
 import {
   BarChart,
   Bar,
@@ -14,16 +14,27 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
-import { Calendar, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
-import { getTransactionStats, getMonthlyTrends } from '../services/firestoreService';
+} from "recharts";
+import { Calendar, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  getTransactionStats,
+  getMonthlyTrends,
+} from "../services/firestoreService";
 
-const COLORS = ['#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444', '#6366F1'];
+const COLORS = [
+  "#8B5CF6",
+  "#EC4899",
+  "#10B981",
+  "#F59E0B",
+  "#3B82F6",
+  "#EF4444",
+  "#6366F1",
+];
 
 export default function Analytics() {
   const { currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState('6'); // months
+  const [timeRange, setTimeRange] = useState("6"); // months
   const [stats, setStats] = useState(null);
   const [monthlyTrends, setMonthlyTrends] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
@@ -56,31 +67,33 @@ export default function Analytics() {
       setMonthlyTrends(trendsData);
 
       // Prepare category data for pie chart
-      const categoryArray = Object.entries(statsData.categoryBreakdown).map(([name, data]) => ({
-        name,
-        value: data.total,
-        count: data.count,
-      }));
+      const categoryArray = Object.entries(statsData.categoryBreakdown).map(
+        ([name, data]) => ({
+          name,
+          value: data.total,
+          count: data.count,
+        })
+      );
       setCategoryData(categoryArray);
-    } catch (error) {
-      console.error('Error fetching analytics:', error);
+    } catch (_error) {
+      console.error("Error fetching analytics:", _error);
     } finally {
       setLoading(false);
     }
   };
 
   const formatCurrency = (amount) => {
-    return `₹${Math.abs(amount).toLocaleString('en-IN', {
+    return `₹${Math.abs(amount).toLocaleString("en-IN", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     })}`;
   };
 
   const formatMonth = (monthStr) => {
-    const [year, month] = monthStr.split('-');
-    return new Date(year, month - 1).toLocaleDateString('en-IN', {
-      month: 'short',
-      year: '2-digit',
+    const [year, month] = monthStr.split("-");
+    return new Date(year, month - 1).toLocaleDateString("en-IN", {
+      month: "short",
+      year: "2-digit",
     });
   };
 
@@ -101,7 +114,9 @@ export default function Analytics() {
   if (!stats || stats.transactionCount === 0) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analytics</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Analytics
+        </h1>
         <div className="card text-center py-12">
           <div className="text-6xl mb-4">📊</div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -120,7 +135,9 @@ export default function Analytics() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analytics</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Analytics
+          </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
             Visualize your spending patterns and trends
           </p>
@@ -162,7 +179,8 @@ export default function Analytics() {
               </p>
               <p className="text-3xl font-bold text-green-900 dark:text-green-100">
                 {formatCurrency(
-                  monthlyTrends.reduce((sum, m) => sum + m.income, 0) / (monthlyTrends.length || 1)
+                  monthlyTrends.reduce((sum, m) => sum + m.income, 0) /
+                    (monthlyTrends.length || 1)
                 )}
               </p>
             </div>
@@ -178,7 +196,8 @@ export default function Analytics() {
               </p>
               <p className="text-3xl font-bold text-red-900 dark:text-red-100">
                 {formatCurrency(
-                  monthlyTrends.reduce((sum, m) => sum + m.expenses, 0) / (monthlyTrends.length || 1)
+                  monthlyTrends.reduce((sum, m) => sum + m.expenses, 0) /
+                    (monthlyTrends.length || 1)
                 )}
               </p>
             </div>
@@ -194,30 +213,44 @@ export default function Analytics() {
         </h2>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={monthlyTrends}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.2} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="#374151"
+              opacity={0.2}
+            />
             <XAxis
               dataKey="month"
               tickFormatter={formatMonth}
               stroke="#6B7280"
-              style={{ fontSize: '12px' }}
+              style={{ fontSize: "12px" }}
             />
             <YAxis
               tickFormatter={formatCurrency}
               stroke="#6B7280"
-              style={{ fontSize: '12px' }}
+              style={{ fontSize: "12px" }}
             />
             <Tooltip
               formatter={(value) => formatCurrency(value)}
               contentStyle={{
-                backgroundColor: '#1F2937',
-                border: 'none',
-                borderRadius: '8px',
-                color: '#F3F4F6',
+                backgroundColor: "#1F2937",
+                border: "none",
+                borderRadius: "8px",
+                color: "#F3F4F6",
               }}
             />
             <Legend />
-            <Bar dataKey="income" fill="#10B981" name="Income" radius={[8, 8, 0, 0]} />
-            <Bar dataKey="expenses" fill="#EF4444" name="Expenses" radius={[8, 8, 0, 0]} />
+            <Bar
+              dataKey="income"
+              fill="#10B981"
+              name="Income"
+              radius={[8, 8, 0, 0]}
+            />
+            <Bar
+              dataKey="expenses"
+              fill="#EF4444"
+              name="Expenses"
+              radius={[8, 8, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -245,16 +278,19 @@ export default function Analytics() {
                   dataKey="value"
                 >
                   {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                 </Pie>
                 <Tooltip
                   formatter={(value) => formatCurrency(value)}
                   contentStyle={{
-                    backgroundColor: '#1F2937',
-                    border: 'none',
-                    borderRadius: '8px',
-                    color: '#F3F4F6',
+                    backgroundColor: "#1F2937",
+                    border: "none",
+                    borderRadius: "8px",
+                    color: "#F3F4F6",
                   }}
                 />
               </PieChart>
@@ -276,14 +312,19 @@ export default function Analytics() {
               .sort((a, b) => b.value - a.value)
               .slice(0, 7)
               .map((category, index) => {
-                const percentage = ((category.value / stats.totalExpenses) * 100).toFixed(1);
+                const percentage = (
+                  (category.value / stats.totalExpenses) *
+                  100
+                ).toFixed(1);
                 return (
                   <div key={category.name}>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-3">
                         <div
                           className="w-4 h-4 rounded"
-                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                          style={{
+                            backgroundColor: COLORS[index % COLORS.length],
+                          }}
                         />
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
                           {category.name}
@@ -321,25 +362,29 @@ export default function Analytics() {
         </h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={monthlyTrends}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.2} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="#374151"
+              opacity={0.2}
+            />
             <XAxis
               dataKey="month"
               tickFormatter={formatMonth}
               stroke="#6B7280"
-              style={{ fontSize: '12px' }}
+              style={{ fontSize: "12px" }}
             />
             <YAxis
               tickFormatter={formatCurrency}
               stroke="#6B7280"
-              style={{ fontSize: '12px' }}
+              style={{ fontSize: "12px" }}
             />
             <Tooltip
               formatter={(value) => formatCurrency(value)}
               contentStyle={{
-                backgroundColor: '#1F2937',
-                border: 'none',
-                borderRadius: '8px',
-                color: '#F3F4F6',
+                backgroundColor: "#1F2937",
+                border: "none",
+                borderRadius: "8px",
+                color: "#F3F4F6",
               }}
             />
             <Legend />
@@ -349,7 +394,7 @@ export default function Analytics() {
               stroke="#EF4444"
               strokeWidth={3}
               name="Monthly Expenses"
-              dot={{ fill: '#EF4444', r: 5 }}
+              dot={{ fill: "#EF4444", r: 5 }}
               activeDot={{ r: 7 }}
             />
           </LineChart>
@@ -369,12 +414,14 @@ export default function Analytics() {
             <p className="text-lg font-bold text-gray-900 dark:text-white">
               {categoryData.length > 0
                 ? categoryData.sort((a, b) => b.value - a.value)[0].name
-                : 'N/A'}
+                : "N/A"}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {categoryData.length > 0
-                ? formatCurrency(categoryData.sort((a, b) => b.value - a.value)[0].value)
-                : ''}
+                ? formatCurrency(
+                    categoryData.sort((a, b) => b.value - a.value)[0].value
+                  )
+                : ""}
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">

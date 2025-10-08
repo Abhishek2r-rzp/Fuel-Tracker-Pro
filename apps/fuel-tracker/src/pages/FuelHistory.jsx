@@ -1,8 +1,16 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@bill-reader/shared-auth';
-import { collection, query, where, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../config/firebase';
-import { format } from 'date-fns';
+import { useState, useEffect } from "react";
+import { useAuth } from "@bill-reader/shared-auth";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "../config/firebase";
+import { format } from "date-fns";
 import { Trash2, Filter, Info, Image, X } from "lucide-react";
 
 function FuelHistory() {
@@ -130,7 +138,9 @@ function FuelHistory() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Fuel History</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Fuel History
+        </h1>
       </div>
 
       {/* Station Info Notice */}
@@ -144,8 +154,9 @@ function FuelHistory() {
               </p>
               <p className="text-blue-800 dark:text-blue-200">
                 Station names and addresses are automatically extracted from
-                scanned bills using OCR. Your current records show "No station
-                info" because they were added before this feature was enabled.
+                scanned bills using OCR. Your current records show &quot;No
+                station info&quot; because they were added before this feature
+                was enabled.
               </p>
               <p className="text-blue-800 mt-2">
                 <strong>Next time you scan a bill:</strong> Station details will
@@ -313,7 +324,9 @@ function FuelHistory() {
 
           {filteredRecords.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500 dark:text-gray-400">No records found</p>
+              <p className="text-gray-500 dark:text-gray-400">
+                No records found
+              </p>
             </div>
           )}
         </div>
@@ -391,4 +404,3 @@ function FuelHistory() {
 }
 
 export default FuelHistory;
-

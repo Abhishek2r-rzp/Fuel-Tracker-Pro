@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { collection, addDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../config/firebase';
-import { Save, Upload, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import imageCompression from 'browser-image-compression';
-import { FEATURES } from '../config/features';
+import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { collection, addDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../config/firebase";
+import { Save, Upload, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import imageCompression from "browser-image-compression";
+import { FEATURES } from "../config/features";
 
 function AddManual() {
   const { currentUser } = useAuth();
@@ -15,23 +15,23 @@ function AddManual() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split("T")[0],
     time: new Date().toTimeString().slice(0, 5),
-    amount: '',
-    fuelVolume: '',
-    odometerReading: '',
-    fuelType: 'Petrol',
-    stationName: '',
-    stationAddress: '',
-    pumpNumber: '',
-    attendantName: '',
-    invoiceNumber: '',
-    paymentMethod: '',
-    vehicleNumber: '',
-    pricePerLiter: '',
-    taxAmount: '',
-    discountAmount: '',
-    notes: ''
+    amount: "",
+    fuelVolume: "",
+    odometerReading: "",
+    fuelType: "Petrol",
+    stationName: "",
+    stationAddress: "",
+    pumpNumber: "",
+    attendantName: "",
+    invoiceNumber: "",
+    paymentMethod: "",
+    vehicleNumber: "",
+    pricePerLiter: "",
+    taxAmount: "",
+    discountAmount: "",
+    notes: "",
   });
 
   const handleImageUpload = (e) => {
@@ -48,22 +48,26 @@ function AddManual() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // Auto-calculate price per liter if amount and volume are present
-    if (name === 'amount' || name === 'fuelVolume') {
-      const amount = name === 'amount' ? parseFloat(value) : parseFloat(formData.amount);
-      const volume = name === 'fuelVolume' ? parseFloat(value) : parseFloat(formData.fuelVolume);
-      
+    if (name === "amount" || name === "fuelVolume") {
+      const amount =
+        name === "amount" ? parseFloat(value) : parseFloat(formData.amount);
+      const volume =
+        name === "fuelVolume"
+          ? parseFloat(value)
+          : parseFloat(formData.fuelVolume);
+
       if (amount && volume && amount > 0 && volume > 0) {
         const pricePerLiter = (amount / volume).toFixed(2);
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           [name]: value,
-          pricePerLiter: pricePerLiter
+          pricePerLiter: pricePerLiter,
         }));
       }
     }
@@ -75,8 +79,15 @@ function AddManual() {
 
     try {
       // Validate required fields
-      if (!formData.date || !formData.amount || !formData.fuelVolume || !formData.odometerReading) {
-        alert('Please fill in all required fields: Date, Amount, Fuel Volume, and Odometer Reading');
+      if (
+        !formData.date ||
+        !formData.amount ||
+        !formData.fuelVolume ||
+        !formData.odometerReading
+      ) {
+        alert(
+          "Please fill in all required fields: Date, Amount, Fuel Volume, and Odometer Reading"
+        );
         setSaving(false);
         return;
       }
@@ -85,34 +96,42 @@ function AddManual() {
       let billImageUrl = null;
       if (FEATURES.ENABLE_IMAGE_STORAGE && image) {
         try {
-          console.log('Compressing image...');
+          console.log("Compressing image...");
           const options = {
             maxSizeMB: 0.5,
             maxWidthOrHeight: 1920,
             useWebWorker: true,
-            fileType: 'image/jpeg'
+            fileType: "image/jpeg",
           };
-          
+
           const compressedImage = await imageCompression(image, options);
-          console.log('Compressed image size:', (compressedImage.size / 1024 / 1024).toFixed(2), 'MB');
-          
+          console.log(
+            "Compressed image size:",
+            (compressedImage.size / 1024 / 1024).toFixed(2),
+            "MB"
+          );
+
           const timestamp = Date.now();
           const randomId = Math.random().toString(36).substring(7);
           const filename = `${currentUser.uid}_${timestamp}_${randomId}.jpg`;
-          
-          const storageRef = ref(storage, `billImages/${currentUser.uid}/${filename}`);
+
+          const storageRef = ref(
+            storage,
+            `billImages/${currentUser.uid}/${filename}`
+          );
           await uploadBytes(storageRef, compressedImage);
           billImageUrl = await getDownloadURL(storageRef);
-          console.log('Image uploaded successfully');
+          console.log("Image uploaded successfully");
         } catch (error) {
-          console.error('Error uploading image:', error);
-          alert('Image upload failed, but record will be saved without image');
+          console.error("Error uploading image:", error);
+          alert("Image upload failed, but record will be saved without image");
         }
       }
 
       // Combine date and time
-      const dateTime = formData.date + (formData.time ? `T${formData.time}` : 'T00:00');
-      
+      const dateTime =
+        formData.date + (formData.time ? `T${formData.time}` : "T00:00");
+
       // Prepare record
       const record = {
         userId: currentUser.uid,
@@ -125,47 +144,64 @@ function AddManual() {
         manualEntry: true, // Flag to indicate manual entry
         ...(billImageUrl && { billImageUrl: billImageUrl }),
         ...(formData.stationName && { stationName: formData.stationName }),
-        ...(formData.stationAddress && { stationAddress: formData.stationAddress }),
+        ...(formData.stationAddress && {
+          stationAddress: formData.stationAddress,
+        }),
         ...(formData.pumpNumber && { pumpNumber: formData.pumpNumber }),
-        ...(formData.attendantName && { attendantName: formData.attendantName }),
-        ...(formData.invoiceNumber && { invoiceNumber: formData.invoiceNumber }),
-        ...(formData.paymentMethod && { paymentMethod: formData.paymentMethod }),
-        ...(formData.vehicleNumber && { vehicleNumber: formData.vehicleNumber }),
-        ...(formData.pricePerLiter && { pricePerLiter: parseFloat(formData.pricePerLiter) }),
-        ...(formData.taxAmount && { taxAmount: parseFloat(formData.taxAmount) }),
-        ...(formData.discountAmount && { discountAmount: parseFloat(formData.discountAmount) }),
-        ...(formData.notes && { notes: formData.notes })
+        ...(formData.attendantName && {
+          attendantName: formData.attendantName,
+        }),
+        ...(formData.invoiceNumber && {
+          invoiceNumber: formData.invoiceNumber,
+        }),
+        ...(formData.paymentMethod && {
+          paymentMethod: formData.paymentMethod,
+        }),
+        ...(formData.vehicleNumber && {
+          vehicleNumber: formData.vehicleNumber,
+        }),
+        ...(formData.pricePerLiter && {
+          pricePerLiter: parseFloat(formData.pricePerLiter),
+        }),
+        ...(formData.taxAmount && {
+          taxAmount: parseFloat(formData.taxAmount),
+        }),
+        ...(formData.discountAmount && {
+          discountAmount: parseFloat(formData.discountAmount),
+        }),
+        ...(formData.notes && { notes: formData.notes }),
       };
-      
-      await addDoc(collection(db, 'fuelRecords'), record);
-      
+
+      await addDoc(collection(db, "fuelRecords"), record);
+
       // Save fuel station info if provided
       if (formData.stationName) {
-        await addDoc(collection(db, 'fuelStations'), {
+        await addDoc(collection(db, "fuelStations"), {
           userId: currentUser.uid,
           stationName: formData.stationName,
-          stationAddress: formData.stationAddress || '',
+          stationAddress: formData.stationAddress || "",
           lastVisited: dateTime,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         });
       }
-      
-      alert('✅ Fuel record saved successfully!');
-      navigate('/history');
+
+      alert("✅ Fuel record saved successfully!");
+      navigate("/history");
     } catch (error) {
-      console.error('Error saving fuel record:', error);
-      
+      console.error("Error saving fuel record:", error);
+
       // Show specific error message
-      let errorMessage = 'Failed to save fuel record. ';
-      if (error.code === 'storage/unauthorized') {
-        errorMessage += 'Firebase Storage rules not configured. Please deploy storage rules first, then try again.';
+      let errorMessage = "Failed to save fuel record. ";
+      if (error.code === "storage/unauthorized") {
+        errorMessage +=
+          "Firebase Storage rules not configured. Please deploy storage rules first, then try again.";
       } else if (error.message) {
         errorMessage += error.message;
       } else {
-        errorMessage += 'Please try again.';
+        errorMessage += "Please try again.";
       }
-      
-      alert('❌ ' + errorMessage);
+
+      alert("❌ " + errorMessage);
     } finally {
       setSaving(false);
     }
@@ -179,9 +215,11 @@ function AddManual() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Add Fuel Record Manually</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Add Fuel Record Manually
+        </h1>
         <button
-          onClick={() => navigate('/scan')}
+          onClick={() => navigate("/scan")}
           className="text-primary-600 hover:text-primary-700 font-medium"
         >
           Or Scan Bill →
@@ -190,7 +228,9 @@ function AddManual() {
 
       <div className="card bg-blue-50 border border-blue-200">
         <p className="text-sm text-blue-900">
-          💡 <strong>Tip:</strong> You can scan bills automatically using the camera, or enter details manually here if you don't have a receipt image.
+          💡 <strong>Tip:</strong> You can scan bills automatically using the
+          camera, or enter details manually here if you don't have a receipt
+          image.
         </p>
       </div>
 
@@ -198,7 +238,7 @@ function AddManual() {
         {/* Basic Information */}
         <div className="card">
           <h2 className="text-xl font-semibold mb-4">📋 Basic Information</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -291,7 +331,9 @@ function AddManual() {
                 placeholder="Auto-calculated"
                 readOnly
               />
-              <p className="text-xs text-gray-500 mt-1">Auto-calculated from amount and volume</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Auto-calculated from amount and volume
+              </p>
             </div>
 
             <div>
@@ -313,8 +355,10 @@ function AddManual() {
 
         {/* Fuel Station Information */}
         <div className="card">
-          <h2 className="text-xl font-semibold mb-4">🏪 Fuel Station (Optional)</h2>
-          
+          <h2 className="text-xl font-semibold mb-4">
+            🏪 Fuel Station (Optional)
+          </h2>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -366,8 +410,10 @@ function AddManual() {
 
         {/* Additional Details */}
         <div className="card">
-          <h2 className="text-xl font-semibold mb-4">📝 Additional Details (Optional)</h2>
-          
+          <h2 className="text-xl font-semibold mb-4">
+            📝 Additional Details (Optional)
+          </h2>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -473,15 +519,21 @@ function AddManual() {
 
         {/* Receipt Image Upload */}
         <div className="card">
-          <h2 className="text-xl font-semibold mb-4">📸 Receipt Image (Optional)</h2>
-          
+          <h2 className="text-xl font-semibold mb-4">
+            📸 Receipt Image (Optional)
+          </h2>
+
           {!preview ? (
             <div>
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:border-primary-500 transition-colors">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <Upload className="w-10 h-10 text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Click to upload receipt image</p>
-                  <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Click to upload receipt image
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    PNG, JPG up to 10MB
+                  </p>
                 </div>
                 <input
                   type="file"
@@ -493,9 +545,9 @@ function AddManual() {
             </div>
           ) : (
             <div className="relative">
-              <img 
-                src={preview} 
-                alt="Receipt preview" 
+              <img
+                src={preview}
+                alt="Receipt preview"
                 className="w-full max-h-64 object-contain rounded-lg border border-gray-200"
               />
               <button
@@ -516,7 +568,7 @@ function AddManual() {
         <div className="flex justify-end space-x-4">
           <button
             type="button"
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
             disabled={saving}
           >
@@ -546,4 +598,3 @@ function AddManual() {
 }
 
 export default AddManual;
-

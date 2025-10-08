@@ -3,9 +3,9 @@
  * Coordinates all file parsers (PDF, Excel, CSV)
  */
 
-import { parsePDF } from './pdfParser';
-import { parseExcel, extractTransactionsFromExcel } from './excelParser';
-import { parseCSVWithHeaders, extractTransactionsFromCSV } from './csvParser';
+import { parsePDF } from "./pdfParser";
+import { parseExcel, extractTransactionsFromExcel } from "./excelParser";
+import { parseCSVWithHeaders, extractTransactionsFromCSV } from "./csvParser";
 
 export async function processFile(file) {
   const fileType = file.type;
@@ -13,35 +13,37 @@ export async function processFile(file) {
 
   try {
     // PDF
-    if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
-      console.log('📄 Processing PDF file:', file.name);
+    if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
+      console.log("📄 Processing PDF file:", file.name);
       const result = await parsePDF(file);
-      console.log('✅ PDF parsed successfully:', result);
-      
+      console.log("✅ PDF parsed successfully:", result);
+
       // For now, return empty transactions array as we need bank-specific parsing
       return {
-        type: 'pdf',
+        type: "pdf",
         fileName: file.name,
         size: file.size,
         pages: result.pages,
         text: result.text,
         transactions: [], // Will be populated with bank-specific parsing
         requiresManualReview: true,
-        message: 'PDF parsed successfully. Bank-specific transaction extraction coming soon.',
+        message:
+          "PDF parsed successfully. Bank-specific transaction extraction coming soon.",
       };
     }
 
     // Excel (XLSX, XLS)
     if (
-      fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-      fileType === 'application/vnd.ms-excel' ||
-      fileName.endsWith('.xlsx') ||
-      fileName.endsWith('.xls')
+      fileType ===
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      fileType === "application/vnd.ms-excel" ||
+      fileName.endsWith(".xlsx") ||
+      fileName.endsWith(".xls")
     ) {
       const result = await parseExcel(file);
       const extracted = extractTransactionsFromExcel(result.allData);
       return {
-        type: 'excel',
+        type: "excel",
         fileName: file.name,
         size: file.size,
         ...result,
@@ -50,11 +52,11 @@ export async function processFile(file) {
     }
 
     // CSV
-    if (fileType === 'text/csv' || fileName.endsWith('.csv')) {
+    if (fileType === "text/csv" || fileName.endsWith(".csv")) {
       const result = await parseCSVWithHeaders(file);
       const extracted = extractTransactionsFromCSV(result.data, result.fields);
       return {
-        type: 'csv',
+        type: "csv",
         fileName: file.name,
         size: file.size,
         ...result,
@@ -62,10 +64,9 @@ export async function processFile(file) {
       };
     }
 
-    throw new Error('Unsupported file type');
-  } catch (error) {
-    console.error('File processing error:', error);
-    throw error;
+    throw new Error("Unsupported file type");
+  } catch (_error) {
+    console._error("File processing _error:", _error);
+    throw _error;
   }
 }
-

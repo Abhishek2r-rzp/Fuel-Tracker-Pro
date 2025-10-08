@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react';
-import { useAuth } from '@bill-reader/shared-auth';
-import { collection, addDoc } from 'firebase/firestore';
+import { useState, useRef } from "react";
+import { useAuth } from "@bill-reader/shared-auth";
+import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
 import {
@@ -227,7 +227,7 @@ function ScanBill() {
       fuelType: data.fuelType,
       createdAt: new Date().toISOString(),
       // Bill image URL
-      ...(billImageUrl && { billImageUrl: billImageUrl }),
+      ...(billImageUrl && { billImageUrl }),
       // Additional fields (only add if they exist)
       ...(data.stationName && { stationName: data.stationName }),
       ...(data.stationAddress && { stationAddress: data.stationAddress }),
@@ -892,4 +892,3 @@ function ScanBill() {
 }
 
 export default ScanBill;
-

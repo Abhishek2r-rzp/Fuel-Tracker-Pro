@@ -32,4 +32,3 @@ export const FEATURES = {
 };
 
 export default FEATURES;
-

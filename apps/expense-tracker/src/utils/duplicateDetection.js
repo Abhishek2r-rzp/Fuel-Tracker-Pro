@@ -3,7 +3,7 @@
  * Hash-based and fuzzy matching for 99%+ accuracy
  */
 
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 
 /**
  * Create a unique hash for a transaction
@@ -12,12 +12,16 @@ import CryptoJS from 'crypto-js';
  */
 export function createTransactionHash(transaction) {
   const { date, amount, description } = transaction;
-  
+
   // Normalize data for consistent hashing
-  const normalizedDate = date ? String(date).trim().toLowerCase() : '';
-  const normalizedAmount = amount ? String(amount).replace(/[^0-9.-]/g, '') : '';
-  const normalizedDesc = description ? String(description).trim().toLowerCase() : '';
-  
+  const normalizedDate = date ? String(date).trim().toLowerCase() : "";
+  const normalizedAmount = amount
+    ? String(amount).replace(/[^0-9.-]/g, "")
+    : "";
+  const normalizedDesc = description
+    ? String(description).trim().toLowerCase()
+    : "";
+
   const hashInput = `${normalizedDate}|${normalizedAmount}|${normalizedDesc}`;
   return CryptoJS.SHA256(hashInput).toString();
 }
@@ -29,19 +33,19 @@ export function createTransactionHash(transaction) {
  * @returns {number} - Edit distance
  */
 function levenshteinDistance(str1, str2) {
-  const s1 = String(str1 || '').toLowerCase();
-  const s2 = String(str2 || '').toLowerCase();
-  
+  const s1 = String(str1 || "").toLowerCase();
+  const s2 = String(str2 || "").toLowerCase();
+
   const matrix = [];
-  
+
   for (let i = 0; i <= s2.length; i++) {
     matrix[i] = [i];
   }
-  
+
   for (let j = 0; j <= s1.length; j++) {
     matrix[0][j] = j;
   }
-  
+
   for (let i = 1; i <= s2.length; i++) {
     for (let j = 1; j <= s1.length; j++) {
       if (s2.charAt(i - 1) === s1.charAt(j - 1)) {
@@ -49,13 +53,13 @@ function levenshteinDistance(str1, str2) {
       } else {
         matrix[i][j] = Math.min(
           matrix[i - 1][j - 1] + 1, // substitution
-          matrix[i][j - 1] + 1,     // insertion
-          matrix[i - 1][j] + 1      // deletion
+          matrix[i][j - 1] + 1, // insertion
+          matrix[i - 1][j] + 1 // deletion
         );
       }
     }
   }
-  
+
   return matrix[s2.length][s1.length];
 }
 
@@ -66,14 +70,14 @@ function levenshteinDistance(str1, str2) {
  * @returns {number} - Similarity percentage
  */
 function calculateSimilarity(str1, str2) {
-  const s1 = String(str1 || '');
-  const s2 = String(str2 || '');
-  
+  const s1 = String(str1 || "");
+  const s2 = String(str2 || "");
+
   if (!s1 || !s2) return 0;
-  
+
   const maxLength = Math.max(s1.length, s2.length);
   if (maxLength === 0) return 100;
-  
+
   const distance = levenshteinDistance(s1, s2);
   return Math.round(((maxLength - distance) / maxLength) * 100);
 }
@@ -89,36 +93,41 @@ export function checkDuplicate(txn1, txn2, threshold = 80) {
   // Exact hash match
   const hash1 = createTransactionHash(txn1);
   const hash2 = createTransactionHash(txn2);
-  
+
   if (hash1 === hash2) {
     return {
       isDuplicate: true,
       confidence: 100,
-      reason: 'Exact match (hash)',
-      method: 'hash',
+      reason: "Exact match (hash)",
+      method: "hash",
     };
   }
-  
+
   // Check date similarity
   const dateSimilarity = calculateSimilarity(txn1.date, txn2.date);
-  
+
   // Check amount match (exact)
-  const amount1 = parseFloat(String(txn1.amount || 0).replace(/[^0-9.-]/g, ''));
-  const amount2 = parseFloat(String(txn2.amount || 0).replace(/[^0-9.-]/g, ''));
+  const amount1 = parseFloat(String(txn1.amount || 0).replace(/[^0-9.-]/g, ""));
+  const amount2 = parseFloat(String(txn2.amount || 0).replace(/[^0-9.-]/g, ""));
   const amountMatch = Math.abs(amount1 - amount2) < 0.01; // Allow 1 paisa difference
-  
+
   // Check description similarity
-  const descSimilarity = calculateSimilarity(txn1.description, txn2.description);
-  
+  const descSimilarity = calculateSimilarity(
+    txn1.description,
+    txn2.description
+  );
+
   // Calculate overall confidence
-  const confidence = Math.round((dateSimilarity * 0.3 + descSimilarity * 0.5 + (amountMatch ? 100 : 0) * 0.2));
-  
+  const confidence = Math.round(
+    dateSimilarity * 0.3 + descSimilarity * 0.5 + (amountMatch ? 100 : 0) * 0.2
+  );
+
   if (confidence >= threshold && amountMatch) {
     return {
       isDuplicate: true,
       confidence,
-      reason: 'High similarity match',
-      method: 'fuzzy',
+      reason: "High similarity match",
+      method: "fuzzy",
       details: {
         dateSimilarity,
         descSimilarity,
@@ -126,12 +135,12 @@ export function checkDuplicate(txn1, txn2, threshold = 80) {
       },
     };
   }
-  
+
   return {
     isDuplicate: false,
     confidence,
-    reason: 'Not a duplicate',
-    method: 'fuzzy',
+    reason: "Not a duplicate",
+    method: "fuzzy",
   };
 }
 
@@ -142,13 +151,17 @@ export function checkDuplicate(txn1, txn2, threshold = 80) {
  * @param {number} threshold - Similarity threshold
  * @returns {Array} - Array of duplicate matches
  */
-export function findDuplicates(newTransactions, existingTransactions, threshold = 80) {
+export function findDuplicates(
+  newTransactions,
+  existingTransactions,
+  threshold = 80
+) {
   const duplicates = [];
-  
+
   newTransactions.forEach((newTxn, newIndex) => {
     existingTransactions.forEach((existingTxn, existingIndex) => {
       const result = checkDuplicate(newTxn, existingTxn, threshold);
-      
+
       if (result.isDuplicate) {
         duplicates.push({
           newTransaction: newTxn,
@@ -160,7 +173,7 @@ export function findDuplicates(newTransactions, existingTransactions, threshold 
       }
     });
   });
-  
+
   return duplicates;
 }
 
@@ -171,15 +184,27 @@ export function findDuplicates(newTransactions, existingTransactions, threshold 
  * @param {number} threshold - Similarity threshold
  * @returns {object} - { newTransactions, duplicates }
  */
-export function detectDuplicates(newTransactions, existingTransactions, threshold = 80) {
-  const duplicateMatches = findDuplicates(newTransactions, existingTransactions, threshold);
-  
+export function detectDuplicates(
+  newTransactions,
+  existingTransactions,
+  threshold = 80
+) {
+  const duplicateMatches = findDuplicates(
+    newTransactions,
+    existingTransactions,
+    threshold
+  );
+
   // Get indices of duplicate transactions
-  const duplicateIndices = new Set(duplicateMatches.map((match) => match.newIndex));
-  
+  const duplicateIndices = new Set(
+    duplicateMatches.map((match) => match.newIndex)
+  );
+
   // Separate new (non-duplicate) transactions
-  const uniqueNewTransactions = newTransactions.filter((_, index) => !duplicateIndices.has(index));
-  
+  const uniqueNewTransactions = newTransactions.filter(
+    (_, index) => !duplicateIndices.has(index)
+  );
+
   // Get duplicate transactions
   const duplicateTransactions = duplicateMatches.map((match) => ({
     transaction: match.newTransaction,
@@ -187,10 +212,9 @@ export function detectDuplicates(newTransactions, existingTransactions, threshol
     confidence: match.confidence,
     reason: match.reason,
   }));
-  
+
   return {
     newTransactions: uniqueNewTransactions,
     duplicates: duplicateTransactions,
   };
 }
-

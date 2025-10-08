@@ -1,9 +1,8 @@
-/**
- * CSV Parser Service
- * Uses papaparse for CSV parsing
- */
-
-import Papa from 'papaparse';
+import Papa from "papaparse";
+import {
+  normalizeBatch,
+  validateNormalizedTransaction,
+} from "./transactionNormalizer";
 
 /**
  * Parse CSV file
@@ -21,9 +20,9 @@ export async function parseCSV(file) {
           success: true,
         });
       },
-      error: (error) => {
-        console.error('CSV parsing error:', error);
-        reject(new Error(`Failed to parse CSV: ${error.message}`));
+      _error: (_error) => {
+        console._error("CSV parsing _error:", _error);
+        reject(new Error(`Failed to parse CSV: ${_error.message}`));
       },
       header: false,
       skipEmptyLines: true,
@@ -49,9 +48,9 @@ export async function parseCSVWithHeaders(file) {
           success: true,
         });
       },
-      error: (error) => {
-        console.error('CSV parsing error:', error);
-        reject(new Error(`Failed to parse CSV: ${error.message}`));
+      _error: (_error) => {
+        console._error("CSV parsing _error:", _error);
+        reject(new Error(`Failed to parse CSV: ${_error.message}`));
       },
       header: true,
       skipEmptyLines: true,
@@ -67,70 +66,60 @@ export async function parseCSVWithHeaders(file) {
  * @returns {Array<object>} - Array of transactions
  */
 export function extractTransactionsFromCSV(data, fields = null) {
-  const transactions = [];
-
   if (!data || data.length === 0) {
     return {
       transactions: [],
       requiresManualReview: true,
-      message: 'No data found in CSV file',
+      message: "No data found in CSV file",
     };
   }
 
-  // If we have fields (header row), use them
+  let normalizedTransactions;
+  let headers;
+
   if (fields && fields.length > 0) {
-    // Look for common column names
-    const dateColumns = ['date', 'transaction date', 'txn date', 'posting date'];
-    const descColumns = ['description', 'narration', 'particulars', 'details'];
-    const amountColumns = ['amount', 'debit', 'credit', 'withdrawal', 'deposit'];
-
-    const dateField = fields.find((f) =>
-      dateColumns.some((col) => f.toLowerCase().includes(col))
-    );
-    const descField = fields.find((f) =>
-      descColumns.some((col) => f.toLowerCase().includes(col))
-    );
-    const amountField = fields.find((f) =>
-      amountColumns.some((col) => f.toLowerCase().includes(col))
-    );
-
-    data.forEach((row, index) => {
-      const transaction = {
-        id: `csv-${index}`,
-        date: dateField ? row[dateField] : null,
-        description: descField ? row[descField] : null,
-        amount: amountField ? parseFloat(String(row[amountField]).replace(/[^0-9.-]/g, '')) : null,
-        rawData: row,
-      };
-
-      if (transaction.date || transaction.description || transaction.amount) {
-        transactions.push(transaction);
-      }
+    headers = fields;
+    const dataRows = data.map((row) => {
+      return fields.map((field) => row[field]);
     });
+
+    normalizedTransactions = normalizeBatch(dataRows, headers);
   } else {
-    // No headers, try to detect columns by position
-    // Assume first row might be headers
-    const headers = data[0];
+    headers = data[0];
     const dataRows = data.slice(1);
-
-    dataRows.forEach((row, index) => {
-      if (row && row.length > 0) {
-        transactions.push({
-          id: `csv-${index}`,
-          date: row[0] || null,
-          description: row[1] || null,
-          amount: row[2] ? parseFloat(String(row[2]).replace(/[^0-9.-]/g, '')) : null,
-          rawData: row,
-        });
-      }
-    });
+    normalizedTransactions = normalizeBatch(dataRows, headers);
   }
 
+  console.log("✅ Normalized CSV transactions:", normalizedTransactions.length);
+  console.log("📄 Sample normalized:", normalizedTransactions.slice(0, 3));
+
+  const validatedTransactions = normalizedTransactions.map((txn, index) => {
+    const validation = validateNormalizedTransaction(txn);
+    return {
+      ...txn,
+      id: `csv-${index}`,
+      validation,
+    };
+  });
+
+  const validTransactions = validatedTransactions.filter(
+    (txn) => txn.validation.isValid
+  );
+  const invalidTransactions = validatedTransactions.filter(
+    (txn) => !txn.validation.isValid
+  );
+
+  console.log("✅ Valid CSV transactions:", validTransactions.length);
+  console.log("⚠️ Invalid CSV transactions:", invalidTransactions.length);
+
   return {
-    headers: fields,
-    transactions,
-    requiresManualReview: transactions.length === 0,
-    message: transactions.length === 0 ? 'Could not auto-detect transaction columns' : null,
+    headers,
+    transactions: validTransactions,
+    invalidTransactions,
+    requiresManualReview: validTransactions.length === 0,
+    message:
+      validTransactions.length === 0
+        ? "Could not extract valid transactions"
+        : null,
   };
 }
-

@@ -1,13 +1,19 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '@bill-reader/shared-auth';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import ScanBill from './pages/ScanBill';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider, useAuth } from "@bill-reader/shared-auth";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import ScanBill from "./pages/ScanBill";
 import AddManual from "./pages/AddManual";
 import FuelHistory from "./pages/FuelHistory";
 import FuelStations from "./pages/FuelStations";
 import BikeProfile from "./pages/BikeProfile";
+import Contact from "./pages/Contact";
 import Layout from "./components/Layout";
 
 // Protected Route Component
@@ -44,6 +50,7 @@ function App() {
                     <Route path="/history" element={<FuelHistory />} />
                     <Route path="/stations" element={<FuelStations />} />
                     <Route path="/bike" element={<BikeProfile />} />
+                    <Route path="/contact" element={<Contact />} />
                   </Routes>
                 </Layout>
               </ProtectedRoute>
@@ -56,4 +63,3 @@ function App() {
 }
 
 export default App;
-

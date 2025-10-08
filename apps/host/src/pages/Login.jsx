@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@bill-reader/shared-auth';
-import { Wallet } from 'lucide-react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@bill-reader/shared-auth";
+import { Wallet } from "lucide-react";
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login, signup } = useAuth();
   const navigate = useNavigate();
@@ -16,22 +16,26 @@ function Login() {
     e.preventDefault();
 
     if (isSignUp && password.length < 6) {
-      return setError('Password must be at least 6 characters');
+      return setError("Password must be at least 6 characters");
     }
 
     try {
-      setError('');
+      setError("");
       setLoading(true);
-      
+
       if (isSignUp) {
         await signup(email, password);
       } else {
         await login(email, password);
       }
-      
-      navigate('/');
+
+      navigate("/");
     } catch (err) {
-      setError(isSignUp ? 'Failed to create account: ' + err.message : 'Failed to sign in: ' + err.message);
+      setError(
+        isSignUp
+          ? "Failed to create account: " + err.message
+          : "Failed to sign in: " + err.message
+      );
     } finally {
       setLoading(false);
     }
@@ -60,7 +64,10 @@ function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Email Address
             </label>
             <input
@@ -75,7 +82,10 @@ function Login() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Password
             </label>
             <input
@@ -94,7 +104,13 @@ function Login() {
             disabled={loading}
             className="w-full btn-primary py-3 text-lg font-semibold"
           >
-            {loading ? (isSignUp ? "Creating account..." : "Signing in...") : (isSignUp ? "Sign Up" : "Sign In")}
+            {loading
+              ? isSignUp
+                ? "Creating account..."
+                : "Signing in..."
+              : isSignUp
+                ? "Sign Up"
+                : "Sign In"}
           </button>
         </form>
 
@@ -103,7 +119,9 @@ function Login() {
             onClick={() => setIsSignUp(!isSignUp)}
             className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition-colors"
           >
-            {isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
+            {isSignUp
+              ? "Already have an account? Sign In"
+              : "Don't have an account? Sign Up"}
           </button>
         </div>
       </div>
@@ -112,4 +130,3 @@ function Login() {
 }
 
 export default Login;
-

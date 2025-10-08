@@ -1,7 +1,7 @@
 // OCR Service - handles bill image processing using Tesseract.js
 // 100% FREE - No API key needed, runs entirely in browser!
 
-import { createWorker } from 'tesseract.js';
+import { createWorker } from "tesseract.js";
 
 /**
  * Process bill image using Tesseract.js OCR (Free, no API required)
@@ -10,35 +10,37 @@ import { createWorker } from 'tesseract.js';
  */
 export async function processBillImage(base64Image) {
   try {
-    console.log('🔍 Starting OCR with Tesseract.js...');
-    
+    console.log("🔍 Starting OCR with Tesseract.js...");
+
     // Convert base64 to data URL
     const imageUrl = `data:image/jpeg;base64,${base64Image}`;
-    
+
     // Create Tesseract worker
-    const worker = await createWorker('eng', 1, {
+    const worker = await createWorker("eng", 1, {
       logger: (m) => {
-        if (m.status === 'recognizing text') {
+        if (m.status === "recognizing text") {
           console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
         }
-      }
+      },
     });
 
     // Perform OCR
-    const { data: { text } } = await worker.recognize(imageUrl);
-    
+    const {
+      data: { text },
+    } = await worker.recognize(imageUrl);
+
     // Terminate worker
     await worker.terminate();
-    
-    console.log('✅ OCR completed successfully');
-    console.log('Extracted text:', text);
-    
+
+    console.log("✅ OCR completed successfully");
+    console.log("Extracted text:", text);
+
     // Parse the text to extract bill data
     const extractedData = parseReceiptText(text);
-    
+
     return extractedData;
   } catch (error) {
-    console.error('❌ Error processing image:', error);
+    console.error("❌ Error processing image:", error);
     throw error;
   }
 }
@@ -46,13 +48,15 @@ export async function processBillImage(base64Image) {
 // Helper function to parse receipt text and extract relevant information
 function parseReceiptText(text) {
   const result = {
-    rawText: text
+    rawText: text,
   };
 
   // Split text into lines
-  const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-  const textUpper = text.toUpperCase();
-  
+  const lines = text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
   // Extract data using regex patterns
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -60,16 +64,18 @@ function parseReceiptText(text) {
 
     // === DATE EXTRACTION ===
     if (!result.date) {
-      const dateMatch = line.match(/(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})|(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})/);
+      const dateMatch = line.match(
+        /(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})|(\d{4})[/\-.](\d{1,2})[/\-.](\d{1,2})/
+      );
       if (dateMatch) {
         if (dateMatch[1]) {
-          const day = dateMatch[1].padStart(2, '0');
-          const month = dateMatch[2].padStart(2, '0');
+          const day = dateMatch[1].padStart(2, "0");
+          const month = dateMatch[2].padStart(2, "0");
           let year = dateMatch[3];
-          if (year.length === 2) year = '20' + year;
+          if (year.length === 2) year = "20" + year;
           result.date = `${year}-${month}-${day}`;
         } else {
-          result.date = `${dateMatch[4]}-${dateMatch[5].padStart(2, '0')}-${dateMatch[6].padStart(2, '0')}`;
+          result.date = `${dateMatch[4]}-${dateMatch[5].padStart(2, "0")}-${dateMatch[6].padStart(2, "0")}`;
         }
       }
     }
@@ -78,7 +84,7 @@ function parseReceiptText(text) {
     if (!result.time) {
       const timeMatch = line.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
       if (timeMatch) {
-        const hours = timeMatch[1].padStart(2, '0');
+        const hours = timeMatch[1].padStart(2, "0");
         const minutes = timeMatch[2];
         result.time = `${hours}:${minutes}`;
       }
@@ -174,10 +180,10 @@ function parseReceiptText(text) {
     if (!result.invoiceNumber) {
       const invoicePatterns = [
         /^([A-Z0-9]{10,})$/i, // Line with just alphanumeric code (e.g., 29AFPPN3621P1Z20Q)
-        /Invoice.*?:\s*([A-Z0-9\-\/]{5,})/i,
-        /Bill.*?:\s*([A-Z0-9\-\/]{5,})/i,
-        /Receipt.*?:\s*([A-Z0-9\-\/]{5,})/i,
-        /Txn.*?:\s*([A-Z0-9\-\/]{5,})/i,
+        /Invoice.*?:\s*([A-Z0-9\-/]{5,})/i,
+        /Bill.*?:\s*([A-Z0-9\-/]{5,})/i,
+        /Receipt.*?:\s*([A-Z0-9\-/]{5,})/i,
+        /Txn.*?:\s*([A-Z0-9\-/]{5,})/i,
       ];
 
       for (const pattern of invoicePatterns) {
@@ -237,11 +243,15 @@ function parseReceiptText(text) {
     // Look for address patterns in the first 15 lines
     if (!result.stationAddress && i > 0 && i < 15) {
       // Address often contains: Road, Street, Area, City names, PIN codes
-      if (/(?:road|street|avenue|colony|nagar|pura|pur|ganj|market|circle|cross|pin|area)/i.test(lineUpper)) {
+      if (
+        /(?:road|street|avenue|colony|nagar|pura|pur|ganj|market|circle|cross|pin|area)/i.test(
+          lineUpper
+        )
+      ) {
         if (!result.stationAddress) {
           result.stationAddress = line;
         } else {
-          result.stationAddress += ', ' + line;
+          result.stationAddress += ", " + line;
         }
       }
       // Also capture lines with PIN codes
@@ -249,7 +259,7 @@ function parseReceiptText(text) {
         if (!result.stationAddress) {
           result.stationAddress = line;
         } else if (!result.stationAddress.includes(line)) {
-          result.stationAddress += ', ' + line;
+          result.stationAddress += ", " + line;
         }
       }
     }
@@ -258,7 +268,7 @@ function parseReceiptText(text) {
   // === SMART INFERENCE ===
   if (!result.date) {
     const today = new Date();
-    result.date = today.toISOString().split('T')[0];
+    result.date = today.toISOString().split("T")[0];
   }
 
   // Calculate price per liter if missing
@@ -282,11 +292,10 @@ function parseReceiptText(text) {
   // Remove empty values
   const cleanedResult = {};
   for (const [key, value] of Object.entries(result)) {
-    if (value !== '' && value !== null && value !== undefined) {
+    if (value !== "" && value !== null && value !== undefined) {
       cleanedResult[key] = value;
     }
   }
 
   return cleanedResult;
 }
-

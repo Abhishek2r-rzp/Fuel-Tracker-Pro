@@ -1,8 +1,13 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '@bill-reader/shared-auth';
-import { ThemeToggle } from '@bill-reader/shared-ui';
-import Login from './pages/Login';
-import AppSelector from './pages/AppSelector';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider, useAuth } from "@bill-reader/shared-auth";
+import { ThemeToggle } from "@bill-reader/shared-ui";
+import Login from "./pages/Login";
+import AppSelector from "./pages/AppSelector";
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -41,4 +46,3 @@ function App() {
 }
 
 export default App;
-

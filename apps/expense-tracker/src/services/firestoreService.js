@@ -2,7 +2,6 @@ import {
   collection,
   addDoc,
   getDocs,
-  getDoc,
   doc,
   query,
   where,
@@ -10,30 +9,65 @@ import {
   deleteDoc,
   updateDoc,
   serverTimestamp,
-  Timestamp
-} from 'firebase/firestore';
-import { db } from '@bill-reader/shared-auth';
+  Timestamp,
+} from "firebase/firestore";
+import { db } from "@bill-reader/shared-auth";
 
 // Collection names
 const COLLECTIONS = {
-  TRANSACTIONS: 'expenseTransactions',
-  STATEMENTS: 'expenseStatements',
-  CATEGORIES: 'expenseCategories',
+  TRANSACTIONS: "expenseTransactions",
+  STATEMENTS: "expenseStatements",
+  CATEGORIES: "expenseCategories",
 };
 
-/**
- * Clean transaction data - remove undefined values
- * @param {Object} transaction - Transaction data
- * @returns {Object} - Cleaned transaction
- */
 function cleanTransactionData(transaction) {
   const cleaned = {};
   Object.keys(transaction).forEach((key) => {
     const value = transaction[key];
-    // Only include defined values (but allow null, 0, false, empty string)
-    if (value !== undefined) {
-      cleaned[key] = value;
+
+    if (value === undefined || value === null) {
+      return;
     }
+
+    if (key === "date") {
+      if (value instanceof Date) {
+        cleaned[key] = Timestamp.fromDate(value);
+      } else if (typeof value === "string" || typeof value === "number") {
+        try {
+          const date = new Date(value);
+          if (!isNaN(date.getTime())) {
+            cleaned[key] = Timestamp.fromDate(date);
+          }
+        } catch (_e) {
+          return;
+        }
+      }
+      return;
+    }
+
+    if (key === "category") {
+      if (typeof value === "object" && value.category) {
+        cleaned[key] = value.category;
+      } else if (typeof value === "string") {
+        cleaned[key] = value;
+      }
+      return;
+    }
+
+    if (
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      !(value instanceof Date) &&
+      !(value instanceof Timestamp)
+    ) {
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      return;
+    }
+
+    cleaned[key] = value;
   });
   return cleaned;
 }
@@ -54,9 +88,9 @@ export async function addTransaction(userId, transaction) {
       updatedAt: serverTimestamp(),
     });
     return docRef.id;
-  } catch (error) {
-    console.error('Error adding transaction:', error);
-    throw error;
+  } catch (_error) {
+    console._error("Error adding transaction:", _error);
+    throw _error;
   }
 }
 
@@ -66,24 +100,29 @@ export async function addTransaction(userId, transaction) {
  * @param {Array} transactions - Array of transaction objects
  * @returns {Promise<Array>} Array of document IDs
  */
-export async function addTransactionsBatch(userId, transactions) {
+export async function addTransactionsBatch(
+  userId,
+  transactions,
+  statementId = null
+) {
   try {
-    console.log('💾 Saving batch of', transactions.length, 'transactions');
+    console.log("💾 Saving batch of", transactions.length, "transactions");
     const promises = transactions.map((transaction) => {
       const cleanedTransaction = cleanTransactionData(transaction);
       return addDoc(collection(db, COLLECTIONS.TRANSACTIONS), {
         userId,
         ...cleanedTransaction,
+        ...(statementId && { statementId }),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
     });
     const results = await Promise.all(promises);
-    console.log('✅ Successfully saved', results.length, 'transactions');
+    console.log("✅ Successfully saved", results.length, "transactions");
     return results.map((docRef) => docRef.id);
-  } catch (error) {
-    console.error('❌ Error adding transactions batch:', error);
-    throw error;
+  } catch (_error) {
+    console._error("❌ Error adding transactions batch:", _error);
+    throw _error;
   }
 }
 
@@ -97,54 +136,74 @@ export async function getTransactions(userId, filters = {}) {
   try {
     let q = query(
       collection(db, COLLECTIONS.TRANSACTIONS),
-      where('userId', '==', userId)
+      where("userId", "==", userId)
     );
 
     // Apply filters
     if (filters.category) {
-      q = query(q, where('category', '==', filters.category));
+      q = query(q, where("category", "==", filters.category));
     }
 
     if (filters.startDate) {
-      q = query(q, where('date', '>=', Timestamp.fromDate(new Date(filters.startDate))));
+      q = query(
+        q,
+        where("date", ">=", Timestamp.fromDate(new Date(filters.startDate)))
+      );
     }
 
     if (filters.endDate) {
-      q = query(q, where('date', '<=', Timestamp.fromDate(new Date(filters.endDate))));
+      q = query(
+        q,
+        where("date", "<=", Timestamp.fromDate(new Date(filters.endDate)))
+      );
     }
 
     // Order by date (descending)
-    q = query(q, orderBy('date', 'desc'));
+    q = query(q, orderBy("date", "desc"));
 
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-      // Convert Firestore Timestamp to JS Date
-      date: doc.data().date?.toDate?.() || doc.data().date,
-      createdAt: doc.data().createdAt?.toDate?.() || doc.data().createdAt,
-      updatedAt: doc.data().updatedAt?.toDate?.() || doc.data().updatedAt,
-    }));
-  } catch (error) {
-    console.error('Error getting transactions:', error);
+    return querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      let category = data.category;
+      if (typeof category === "object" && category?.category) {
+        category = category.category;
+      }
+      return {
+        id: doc.id,
+        ...data,
+        category,
+        date: data.date?.toDate?.() || data.date,
+        createdAt: data.createdAt?.toDate?.() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
+      };
+    });
+  } catch (_error) {
+    console._error("Error getting transactions:", _error);
     // Fallback: try without ordering if index is missing
     try {
       const q = query(
         collection(db, COLLECTIONS.TRANSACTIONS),
-        where('userId', '==', userId)
+        where("userId", "==", userId)
       );
       const querySnapshot = await getDocs(q);
-      const transactions = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        date: doc.data().date?.toDate?.() || doc.data().date,
-        createdAt: doc.data().createdAt?.toDate?.() || doc.data().createdAt,
-        updatedAt: doc.data().updatedAt?.toDate?.() || doc.data().updatedAt,
-      }));
-      // Sort manually
+      const transactions = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        let category = data.category;
+        if (typeof category === "object" && category?.category) {
+          category = category.category;
+        }
+        return {
+          id: doc.id,
+          ...data,
+          category,
+          date: data.date?.toDate?.() || data.date,
+          createdAt: data.createdAt?.toDate?.() || data.createdAt,
+          updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
+        };
+      });
       return transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
     } catch (fallbackError) {
-      console.error('Fallback query also failed:', fallbackError);
+      console._error("Fallback query also failed:", fallbackError);
       throw fallbackError;
     }
   }
@@ -163,9 +222,9 @@ export async function updateTransaction(transactionId, updates) {
       ...updates,
       updatedAt: serverTimestamp(),
     });
-  } catch (error) {
-    console.error('Error updating transaction:', error);
-    throw error;
+  } catch (_error) {
+    console._error("Error updating transaction:", _error);
+    throw _error;
   }
 }
 
@@ -177,9 +236,135 @@ export async function updateTransaction(transactionId, updates) {
 export async function deleteTransaction(transactionId) {
   try {
     await deleteDoc(doc(db, COLLECTIONS.TRANSACTIONS, transactionId));
-  } catch (error) {
-    console.error('Error deleting transaction:', error);
-    throw error;
+  } catch (_error) {
+    console._error("Error deleting transaction:", _error);
+    throw _error;
+  }
+}
+
+/**
+ * Delete multiple transactions
+ * @param {string[]} transactionIds - Array of transaction IDs
+ * @returns {Promise<number>} Number of deleted transactions
+ */
+export async function deleteTransactionsBulk(transactionIds) {
+  try {
+    const deletePromises = transactionIds.map((id) =>
+      deleteDoc(doc(db, COLLECTIONS.TRANSACTIONS, id))
+    );
+    await Promise.all(deletePromises);
+    return transactionIds.length;
+  } catch (_error) {
+    console._error("Error deleting transactions in bulk:", _error);
+    throw _error;
+  }
+}
+
+/**
+ * Delete ALL transactions for a user (use with caution!)
+ * @param {string} userId - User ID
+ * @returns {Promise<number>} Number of deleted transactions
+ */
+export async function deleteAllTransactions(userId) {
+  try {
+    const q = query(
+      collection(db, COLLECTIONS.TRANSACTIONS),
+      where("userId", "==", userId)
+    );
+
+    const querySnapshot = await getDocs(q);
+    const transactionIds = querySnapshot.docs.map((doc) => doc.id);
+
+    if (transactionIds.length === 0) {
+      return 0;
+    }
+
+    const deletePromises = transactionIds.map((id) =>
+      deleteDoc(doc(db, COLLECTIONS.TRANSACTIONS, id))
+    );
+
+    await Promise.all(deletePromises);
+    console.log(
+      `🗑️ Deleted ${transactionIds.length} transactions for user ${userId}`
+    );
+    return transactionIds.length;
+  } catch (_error) {
+    console._error("Error deleting all transactions:", _error);
+    throw _error;
+  }
+}
+
+export async function getTransactionsByStatement(statementId) {
+  try {
+    const q = query(
+      collection(db, COLLECTIONS.TRANSACTIONS),
+      where("statementId", "==", statementId),
+      orderBy("date", "desc")
+    );
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      let category = data.category;
+      if (typeof category === "object" && category?.category) {
+        category = category.category;
+      }
+      return {
+        id: doc.id,
+        ...data,
+        category,
+        date: data.date?.toDate?.() || data.date,
+        createdAt: data.createdAt?.toDate?.() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
+      };
+    });
+  } catch (_error) {
+    console._error("Error getting transactions by statement:", _error);
+    try {
+      const q = query(
+        collection(db, COLLECTIONS.TRANSACTIONS),
+        where("statementId", "==", statementId)
+      );
+      const querySnapshot = await getDocs(q);
+      const transactions = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+        let category = data.category;
+        if (typeof category === "object" && category?.category) {
+          category = category.category;
+        }
+        return {
+          id: doc.id,
+          ...data,
+          category,
+          date: data.date?.toDate?.() || data.date,
+          createdAt: data.createdAt?.toDate?.() || data.createdAt,
+          updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
+        };
+      });
+      return transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } catch (fallbackError) {
+      console._error("Fallback query also failed:", fallbackError);
+      throw fallbackError;
+    }
+  }
+}
+
+export async function deleteStatement(statementId) {
+  try {
+    const transactions = await getTransactionsByStatement(statementId);
+
+    const deletePromises = transactions.map((txn) =>
+      deleteDoc(doc(db, COLLECTIONS.TRANSACTIONS, txn.id))
+    );
+    await Promise.all(deletePromises);
+
+    await deleteDoc(doc(db, COLLECTIONS.STATEMENTS, statementId));
+
+    console.log(`✅ Deleted statement and ${transactions.length} transactions`);
+    return transactions.length;
+  } catch (_error) {
+    console._error("Error deleting statement:", _error);
+    throw _error;
   }
 }
 
@@ -197,9 +382,9 @@ export async function addStatement(userId, statement) {
       uploadedAt: serverTimestamp(),
     });
     return docRef.id;
-  } catch (error) {
-    console.error('Error adding statement:', error);
-    throw error;
+  } catch (_error) {
+    console._error("Error adding statement:", _error);
+    throw _error;
   }
 }
 
@@ -212,8 +397,8 @@ export async function getStatements(userId) {
   try {
     const q = query(
       collection(db, COLLECTIONS.STATEMENTS),
-      where('userId', '==', userId),
-      orderBy('uploadedAt', 'desc')
+      where("userId", "==", userId),
+      orderBy("uploadedAt", "desc")
     );
 
     const querySnapshot = await getDocs(q);
@@ -222,13 +407,13 @@ export async function getStatements(userId) {
       ...doc.data(),
       uploadedAt: doc.data().uploadedAt?.toDate?.() || doc.data().uploadedAt,
     }));
-  } catch (error) {
-    console.error('Error getting statements:', error);
+  } catch (_error) {
+    console._error("Error getting statements:", _error);
     // Fallback without ordering
     try {
       const q = query(
         collection(db, COLLECTIONS.STATEMENTS),
-        where('userId', '==', userId)
+        where("userId", "==", userId)
       );
       const querySnapshot = await getDocs(q);
       const statements = querySnapshot.docs.map((doc) => ({
@@ -236,9 +421,11 @@ export async function getStatements(userId) {
         ...doc.data(),
         uploadedAt: doc.data().uploadedAt?.toDate?.() || doc.data().uploadedAt,
       }));
-      return statements.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+      return statements.sort(
+        (a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt)
+      );
     } catch (fallbackError) {
-      console.error('Fallback query also failed:', fallbackError);
+      console._error("Fallback query also failed:", fallbackError);
       throw fallbackError;
     }
   }
@@ -255,23 +442,24 @@ export async function getTransactionStats(userId, filters = {}) {
     const transactions = await getTransactions(userId, filters);
 
     const totalIncome = transactions
-      .filter((t) => t.type === 'credit' || t.amount > 0)
+      .filter((t) => t.type === "credit" || t.amount > 0)
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
     const totalExpenses = transactions
-      .filter((t) => t.type === 'debit' || t.amount < 0)
+      .filter((t) => t.type === "debit" || t.amount < 0)
       .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
     const netSavings = totalIncome - totalExpenses;
 
-    // Category-wise breakdown
+    // Category-wise breakdown (prioritize merchant names for detailed tracking)
     const categoryBreakdown = transactions.reduce((acc, t) => {
-      const category = t.category || 'Uncategorized';
-      if (!acc[category]) {
-        acc[category] = { count: 0, total: 0 };
+      // Use merchant name if available, otherwise use category, fallback to 'Uncategorized'
+      const displayName = t.merchant || t.category || "Uncategorized";
+      if (!acc[displayName]) {
+        acc[displayName] = { count: 0, total: 0 };
       }
-      acc[category].count++;
-      acc[category].total += Math.abs(t.amount);
+      acc[displayName].count++;
+      acc[displayName].total += Math.abs(t.amount);
       return acc;
     }, {});
 
@@ -283,9 +471,9 @@ export async function getTransactionStats(userId, filters = {}) {
       categoryBreakdown,
       transactions,
     };
-  } catch (error) {
-    console.error('Error getting transaction stats:', error);
-    throw error;
+  } catch (_error) {
+    console._error("Error getting transaction stats:", _error);
+    throw _error;
   }
 }
 
@@ -310,7 +498,7 @@ export async function getMonthlyTrends(userId, months = 6) {
     const monthlyData = {};
     transactions.forEach((t) => {
       const date = new Date(t.date);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = {
@@ -321,7 +509,7 @@ export async function getMonthlyTrends(userId, months = 6) {
         };
       }
 
-      if (t.type === 'credit' || t.amount > 0) {
+      if (t.type === "credit" || t.amount > 0) {
         monthlyData[monthKey].income += Math.abs(t.amount);
       } else {
         monthlyData[monthKey].expenses += Math.abs(t.amount);
@@ -329,10 +517,11 @@ export async function getMonthlyTrends(userId, months = 6) {
       monthlyData[monthKey].transactions++;
     });
 
-    return Object.values(monthlyData).sort((a, b) => a.month.localeCompare(b.month));
-  } catch (error) {
-    console.error('Error getting monthly trends:', error);
-    throw error;
+    return Object.values(monthlyData).sort((a, b) =>
+      a.month.localeCompare(b.month)
+    );
+  } catch (_error) {
+    console._error("Error getting monthly trends:", _error);
+    throw _error;
   }
 }
-

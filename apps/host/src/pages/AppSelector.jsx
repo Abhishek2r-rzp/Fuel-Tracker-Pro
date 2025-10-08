@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@bill-reader/shared-auth';
-import { Fuel, Receipt, LogOut, ArrowRight } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@bill-reader/shared-auth";
+import { Fuel, Receipt, LogOut, ArrowRight } from "lucide-react";
 
 function AppSelector() {
   const navigate = useNavigate();
@@ -9,29 +9,30 @@ function AppSelector() {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
-      console.error('Failed to logout:', error);
+      console.error("Failed to logout:", error);
     }
   };
 
   const apps = [
     {
-      id: 'fuel-tracker',
-      name: 'Fuel Tracker Pro',
-      description: 'Track motorcycle fuel consumption with bill scanning',
+      id: "fuel-tracker",
+      name: "Fuel Tracker Pro",
+      description: "Track motorcycle fuel consumption with bill scanning",
       icon: Fuel,
-      color: 'from-blue-500 to-blue-600',
-      url: 'http://localhost:3001',
+      color: "from-blue-500 to-blue-600",
+      url: "http://localhost:3001",
       available: true,
     },
     {
-      id: 'expense-tracker',
-      name: 'Expense Tracker',
-      description: 'Manage expenses with PDF bank statements and credit card bills',
+      id: "expense-tracker",
+      name: "Expense Tracker",
+      description:
+        "Manage expenses with PDF bank statements and credit card bills",
       icon: Receipt,
-      color: 'from-purple-500 to-purple-600',
-      url: 'http://localhost:3002',
+      color: "from-purple-500 to-purple-600",
+      url: "http://localhost:3002",
       available: true,
     },
   ];
@@ -87,23 +88,28 @@ function AppSelector() {
                 disabled={!app.available}
                 className={`
                   group relative overflow-hidden rounded-2xl p-8 text-left transition-all duration-300
-                  ${app.available 
-                    ? 'bg-white dark:bg-card-dark shadow-lg hover:shadow-2xl hover:scale-105 cursor-pointer' 
-                    : 'bg-gray-100 dark:bg-gray-800 opacity-60 cursor-not-allowed'
+                  ${
+                    app.available
+                      ? "bg-white dark:bg-card-dark shadow-lg hover:shadow-2xl hover:scale-105 cursor-pointer"
+                      : "bg-gray-100 dark:bg-gray-800 opacity-60 cursor-not-allowed"
                   }
                   border border-gray-200 dark:border-gray-700
                 `}
               >
                 {/* Gradient Background */}
-                <div className={`
+                <div
+                  className={`
                   absolute inset-0 bg-gradient-to-br ${app.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300
-                `} />
+                `}
+                />
 
                 {/* Content */}
                 <div className="relative z-10">
-                  <div className={`
+                  <div
+                    className={`
                     inline-flex p-4 rounded-xl bg-gradient-to-br ${app.color} mb-4 shadow-lg
-                  `}>
+                  `}
+                  >
                     <Icon className="w-8 h-8 text-white" />
                   </div>
 
@@ -135,7 +141,8 @@ function AppSelector() {
         <div className="mt-12 max-w-2xl mx-auto">
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
             <p className="text-sm text-blue-800 dark:text-blue-200 text-center">
-              💡 <strong>Tip:</strong> Each app works independently but shares your authentication and preferences.
+              💡 <strong>Tip:</strong> Each app works independently but shares
+              your authentication and preferences.
             </p>
           </div>
         </div>
@@ -145,4 +152,3 @@ function AppSelector() {
 }
 
 export default AppSelector;
-

@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { collection, addDoc } from 'firebase/firestore';
+import { useState, useRef } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../config/firebase";
 import {
@@ -892,4 +892,3 @@ function ScanBill() {
 }
 
 export default ScanBill;
-

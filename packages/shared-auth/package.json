@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "echo 'Shared Auth - no dev server needed'",
     "build": "echo 'Shared Auth - no build needed (used directly)'",
-    "lint": "echo 'Shared Auth - no linting configured yet'"
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives"
   },
   "peerDependencies": {
     "react": "^18.2.0",
@@ -24,4 +24,3 @@
     "shared"
   ]
 }
-

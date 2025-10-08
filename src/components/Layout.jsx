@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import ThemeToggle from "./ThemeToggle";
 import {
   LayoutDashboard,
@@ -23,9 +23,9 @@ function Layout({ children }) {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
-      console.error('Failed to logout:', error);
+      console.error("Failed to logout:", error);
     }
   };
 
@@ -135,4 +135,3 @@ function Layout({ children }) {
 }
 
 export default Layout;
-

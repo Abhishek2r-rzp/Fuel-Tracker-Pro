@@ -1,2 +1,1 @@
-export { default as ThemeToggle } from './ThemeToggle.jsx';
-
+export { default as ThemeToggle } from "./ThemeToggle.jsx";

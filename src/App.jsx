@@ -1,10 +1,15 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { useAuth } from './hooks/useAuth';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import ScanBill from './pages/ScanBill';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { useAuth } from "./hooks/useAuth";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import ScanBill from "./pages/ScanBill";
 import AddManual from "./pages/AddManual";
 import FuelHistory from "./pages/FuelHistory";
 import FuelStations from "./pages/FuelStations";
@@ -57,4 +62,3 @@ function App() {
 }
 
 export default App;
-

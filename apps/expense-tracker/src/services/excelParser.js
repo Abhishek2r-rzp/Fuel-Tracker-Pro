@@ -1,9 +1,8 @@
-/**
- * Excel Parser Service
- * Uses xlsx library for XLS/XLSX parsing
- */
-
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
+import {
+  normalizeBatch,
+  validateNormalizedTransaction,
+} from "./transactionNormalizer";
 
 /**
  * Parse Excel file (XLS, XLSX)
@@ -13,7 +12,7 @@ import * as XLSX from 'xlsx';
 export async function parseExcel(file) {
   try {
     const arrayBuffer = await file.arrayBuffer();
-    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+    const workbook = XLSX.read(arrayBuffer, { type: "array" });
 
     const sheets = {};
     const allData = [];
@@ -22,7 +21,7 @@ export async function parseExcel(file) {
     workbook.SheetNames.forEach((sheetName) => {
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      
+
       sheets[sheetName] = {
         name: sheetName,
         data: jsonData,
@@ -40,9 +39,9 @@ export async function parseExcel(file) {
       allData,
       success: true,
     };
-  } catch (error) {
-    console.error('Excel parsing error:', error);
-    throw new Error(`Failed to parse Excel: ${error.message}`);
+  } catch (_error) {
+    console._error("Excel parsing _error:", _error);
+    throw new Error(`Failed to parse Excel: ${_error.message}`);
   }
 }
 
@@ -52,11 +51,8 @@ export async function parseExcel(file) {
  * @returns {Array<object>} - Array of transactions
  */
 export function extractTransactionsFromExcel(data) {
-  const transactions = [];
-  
-  // Skip empty rows
   const filteredData = data.filter((row) => row && row.length > 0);
-  
+
   console.log("📊 Excel filtered data rows:", filteredData.length);
 
   if (filteredData.length === 0) {
@@ -67,7 +63,6 @@ export function extractTransactionsFromExcel(data) {
     };
   }
 
-  // Look for common column names
   const dateColumns = [
     "date",
     "transaction date",
@@ -92,7 +87,6 @@ export function extractTransactionsFromExcel(data) {
     "cr",
   ];
 
-  // Smart header detection - find the row with the most matching column names
   let headerRowIndex = -1;
   let bestMatchScore = 0;
 
@@ -120,7 +114,6 @@ export function extractTransactionsFromExcel(data) {
     bestMatchScore
   );
 
-  // If no header found, return error
   if (headerRowIndex === -1 || bestMatchScore === 0) {
     console.log("⚠️ Could not find header row");
     return {
@@ -131,54 +124,45 @@ export function extractTransactionsFromExcel(data) {
     };
   }
 
-  // Use detected header row
   const headers = filteredData[headerRowIndex];
   const dataRows = filteredData.slice(headerRowIndex + 1);
-  
+
   console.log("📋 Excel headers:", headers);
   console.log("📊 Excel data rows:", dataRows.length);
   console.log("📄 First 3 data rows:", dataRows.slice(0, 3));
 
-  const dateIndex = headers.findIndex((h) =>
-    dateColumns.some((col) => String(h).toLowerCase().includes(col))
-  );
-  const descIndex = headers.findIndex((h) =>
-    descColumns.some((col) => String(h).toLowerCase().includes(col))
-  );
-  const amountIndex = headers.findIndex((h) =>
-    amountColumns.some((col) => String(h).toLowerCase().includes(col))
-  );
+  const normalizedTransactions = normalizeBatch(dataRows, headers);
 
-  console.log("🔍 Column indices found:", {
-    dateIndex,
-    descIndex,
-    amountIndex,
+  console.log("✅ Normalized transactions:", normalizedTransactions.length);
+  console.log("📄 Sample normalized:", normalizedTransactions.slice(0, 3));
+
+  const validatedTransactions = normalizedTransactions.map((txn, index) => {
+    const validation = validateNormalizedTransaction(txn);
+    return {
+      ...txn,
+      id: `excel-${index}`,
+      validation,
+    };
   });
 
-  // Extract transactions if columns found
-  if (dateIndex >= 0 || descIndex >= 0 || amountIndex >= 0) {
-    dataRows.forEach((row, index) => {
-      if (row && row.length > 0) {
-        const transaction = {
-          id: `excel-${index}`,
-          date: dateIndex >= 0 ? row[dateIndex] : null,
-          description: descIndex >= 0 ? row[descIndex] : null,
-          amount: amountIndex >= 0 ? parseFloat(String(row[amountIndex]).replace(/[^0-9.-]/g, '')) : null,
-          rawData: row,
-        };
+  const validTransactions = validatedTransactions.filter(
+    (txn) => txn.validation.isValid
+  );
+  const invalidTransactions = validatedTransactions.filter(
+    (txn) => !txn.validation.isValid
+  );
 
-        if (transaction.date || transaction.description || transaction.amount) {
-          transactions.push(transaction);
-        }
-      }
-    });
-  }
+  console.log("✅ Valid transactions:", validTransactions.length);
+  console.log("⚠️ Invalid transactions:", invalidTransactions.length);
 
   return {
     headers,
-    transactions,
-    requiresManualReview: transactions.length === 0,
-    message: transactions.length === 0 ? 'Could not auto-detect transaction columns' : null,
+    transactions: validTransactions,
+    invalidTransactions,
+    requiresManualReview: validTransactions.length === 0,
+    message:
+      validTransactions.length === 0
+        ? "Could not extract valid transactions"
+        : null,
   };
 }
-

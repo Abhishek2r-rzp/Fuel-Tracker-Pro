@@ -8,10 +8,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives"
   },
   "dependencies": {
-        "@bill-reader/shared-ui": "*",
+    "@bill-reader/shared-ui": "*",
     "@bill-reader/shared-auth": "*",
     "@bill-reader/shared-utils": "*",
     "browser-image-compression": "^2.0.2",
@@ -40,4 +40,3 @@
     "workbox-window": "^7.0.0"
   }
 }
-

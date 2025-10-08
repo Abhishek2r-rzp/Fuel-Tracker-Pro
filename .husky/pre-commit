@@ -1,18 +1,23 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🔍 Running pre-commit hook..."
-echo "📦 Building project to verify code integrity..."
+echo "🔍 Running pre-commit checks..."
 
-# Run the build
-npm run build
+echo "✨ Running Prettier and ESLint on staged files..."
+npx lint-staged
 
-# Check if build was successful
-if [ $? -eq 0 ]; then
-  echo "✅ Build successful! Proceeding with commit..."
-  exit 0
-else
-  echo "❌ Build failed! Commit aborted."
-  echo "🔧 Please fix the build errors before committing."
+if [ $? -ne 0 ]; then
+  echo "❌ Linting/Formatting failed! Please fix the errors and try again."
   exit 1
 fi
+
+echo "📝 Running full lint check..."
+npm run lint
+
+if [ $? -ne 0 ]; then
+  echo "❌ Lint check failed! Please fix the errors and try again."
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed! Proceeding with commit..."
+exit 0

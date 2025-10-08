@@ -1,2 +1,1 @@
-export { FEATURES, default as features } from './features.js';
-
+export { FEATURES, default as features } from "./features.js";

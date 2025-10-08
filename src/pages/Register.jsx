@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { Fuel } from 'lucide-react';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { Fuel } from "lucide-react";
 
 function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
@@ -16,20 +16,20 @@ function Register() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      return setError('Passwords do not match');
+      return setError("Passwords do not match");
     }
 
     if (password.length < 6) {
-      return setError('Password must be at least 6 characters');
+      return setError("Password must be at least 6 characters");
     }
 
     try {
-      setError('');
+      setError("");
       setLoading(true);
       await signup(email, password);
-      navigate('/');
+      navigate("/");
     } catch (err) {
-      setError('Failed to create account: ' + err.message);
+      setError("Failed to create account: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -137,4 +137,3 @@ function Register() {
 }
 
 export default Register;
-

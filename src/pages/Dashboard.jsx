@@ -1,11 +1,35 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
-import { db } from '../config/firebase';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { TrendingUp, DollarSign, Gauge, Calendar, Trash2, AlertCircle } from 'lucide-react';
-import { format } from 'date-fns';
-import { deleteDoc, doc } from 'firebase/firestore';
+import { useState, useEffect } from "react";
+import { useAuth } from "../hooks/useAuth";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../config/firebase";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
+import {
+  TrendingUp,
+  DollarSign,
+  Gauge,
+  Calendar,
+  Trash2,
+  AlertCircle,
+} from "lucide-react";
+import { format } from "date-fns";
+import { deleteDoc, doc } from "firebase/firestore";
 
 function Dashboard() {
   const { currentUser } = useAuth();
@@ -15,7 +39,7 @@ function Dashboard() {
     avgMileage: 0,
     costPerKm: 0,
     totalSpent: 0,
-    totalFuel: 0
+    totalFuel: 0,
   });
 
   useEffect(() => {
@@ -25,44 +49,47 @@ function Dashboard() {
   const fetchFuelRecords = async () => {
     try {
       const q = query(
-        collection(db, 'fuelRecords'),
-        where('userId', '==', currentUser.uid),
-        orderBy('date', 'desc'),
+        collection(db, "fuelRecords"),
+        where("userId", "==", currentUser.uid),
+        orderBy("date", "desc"),
         limit(10)
       );
-      
+
       const querySnapshot = await getDocs(q);
       const records = [];
       querySnapshot.forEach((doc) => {
         records.push({ id: doc.id, ...doc.data() });
       });
-      
+
       setFuelRecords(records);
       calculateStats(records);
     } catch (error) {
-      console.error('Error fetching fuel records:', error);
-      
+      console.error("Error fetching fuel records:", error);
+
       // If index error, try without orderBy
-      if (error.code === 'failed-precondition' || error.message?.includes('index')) {
-        console.log('Index not ready, fetching without ordering...');
+      if (
+        error.code === "failed-precondition" ||
+        error.message?.includes("index")
+      ) {
+        console.log("Index not ready, fetching without ordering...");
         try {
           const simpleQuery = query(
-            collection(db, 'fuelRecords'),
-            where('userId', '==', currentUser.uid)
+            collection(db, "fuelRecords"),
+            where("userId", "==", currentUser.uid)
           );
           const querySnapshot = await getDocs(simpleQuery);
           const records = [];
           querySnapshot.forEach((doc) => {
             records.push({ id: doc.id, ...doc.data() });
           });
-          
+
           // Sort manually by date
           records.sort((a, b) => new Date(b.date) - new Date(a.date));
-          
+
           setFuelRecords(records.slice(0, 10));
           calculateStats(records.slice(0, 10));
         } catch (innerError) {
-          console.error('Fallback query also failed:', innerError);
+          console.error("Fallback query also failed:", innerError);
         }
       }
     } finally {
@@ -76,7 +103,7 @@ function Dashboard() {
         avgMileage: 0,
         costPerKm: 0,
         totalSpent: records.reduce((sum, r) => sum + r.amount, 0),
-        totalFuel: records.reduce((sum, r) => sum + r.fuelVolume, 0)
+        totalFuel: records.reduce((sum, r) => sum + r.fuelVolume, 0),
       });
       return;
     }
@@ -87,7 +114,8 @@ function Dashboard() {
 
     // Calculate mileage between consecutive records
     for (let i = 0; i < records.length - 1; i++) {
-      const distance = records[i].odometerReading - records[i + 1].odometerReading;
+      const distance =
+        records[i].odometerReading - records[i + 1].odometerReading;
       if (distance > 0) {
         totalDistance += distance;
         totalFuel += records[i].fuelVolume;
@@ -95,26 +123,29 @@ function Dashboard() {
       }
     }
 
-    const avgMileage = totalFuel > 0 ? (totalDistance / totalFuel).toFixed(2) : 0;
-    const costPerKm = totalDistance > 0 ? (totalCost / totalDistance).toFixed(2) : 0;
+    const avgMileage =
+      totalFuel > 0 ? (totalDistance / totalFuel).toFixed(2) : 0;
+    const costPerKm =
+      totalDistance > 0 ? (totalCost / totalDistance).toFixed(2) : 0;
 
     setStats({
       avgMileage: parseFloat(avgMileage),
       costPerKm: parseFloat(costPerKm),
       totalSpent: records.reduce((sum, r) => sum + r.amount, 0),
-      totalFuel: records.reduce((sum, r) => sum + r.fuelVolume, 0)
+      totalFuel: records.reduce((sum, r) => sum + r.fuelVolume, 0),
     });
   };
 
   const getMileageChartData = () => {
     const data = [];
     for (let i = 0; i < fuelRecords.length - 1; i++) {
-      const distance = fuelRecords[i].odometerReading - fuelRecords[i + 1].odometerReading;
+      const distance =
+        fuelRecords[i].odometerReading - fuelRecords[i + 1].odometerReading;
       if (distance > 0) {
         const mileage = distance / fuelRecords[i].fuelVolume;
         data.unshift({
-          date: format(new Date(fuelRecords[i].date), 'MMM dd'),
-          mileage: parseFloat(mileage.toFixed(2))
+          date: format(new Date(fuelRecords[i].date), "MMM dd"),
+          mileage: parseFloat(mileage.toFixed(2)),
         });
       }
     }
@@ -122,25 +153,32 @@ function Dashboard() {
   };
 
   const getCostChartData = () => {
-    return fuelRecords.slice(0, 7).reverse().map(record => ({
-      date: format(new Date(record.date), 'MMM dd'),
-      cost: record.amount,
-      volume: record.fuelVolume
-    }));
+    return fuelRecords
+      .slice(0, 7)
+      .reverse()
+      .map((record) => ({
+        date: format(new Date(record.date), "MMM dd"),
+        cost: record.amount,
+        volume: record.fuelVolume,
+      }));
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this fuel record? This action cannot be undone.')) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this fuel record? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
     try {
-      await deleteDoc(doc(db, 'fuelRecords', id));
-      alert('✅ Record deleted successfully!');
+      await deleteDoc(doc(db, "fuelRecords", id));
+      alert("✅ Record deleted successfully!");
       fetchFuelRecords(); // Refresh data
     } catch (error) {
-      console.error('Error deleting record:', error);
-      alert('❌ Failed to delete record. Please try again.');
+      console.error("Error deleting record:", error);
+      alert("❌ Failed to delete record. Please try again.");
     }
   };
 
@@ -373,4 +411,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-

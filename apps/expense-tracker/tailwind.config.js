@@ -45,6 +45,10 @@ export default {
           300: "#86EFAC",
           400: "#4ADE80",
           500: "#22C55E",
+          600: "#16A34A",
+          700: "#15803D",
+          800: "#166534",
+          900: "#14532D",
         },
         // Pastel peach warning
         warning: {
@@ -54,6 +58,10 @@ export default {
           300: "#FDBA74",
           400: "#FB923C",
           500: "#F97316",
+          600: "#EA580C",
+          700: "#C2410C",
+          800: "#9A3412",
+          900: "#7C2D12",
         },
         // Pastel red error
         error: {
@@ -63,6 +71,11 @@ export default {
           300: "#FCA5A5",
           400: "#F87171",
           500: "#EF4444",
+          600: "#DC2626",
+          700: "#B91C1C",
+          800: "#991B1B",
+          900: "#7F1D1D",
+          950: "#450A0A",
         },
       },
       backgroundColor: {
@@ -85,4 +98,3 @@ export default {
   },
   plugins: [],
 };
-
