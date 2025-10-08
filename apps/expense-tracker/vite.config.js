@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig({
+  base: "/expense-tracker/",
   plugins: [react()],
   envDir: path.resolve(__dirname, "../../"), // Load .env from monorepo root
   server: {

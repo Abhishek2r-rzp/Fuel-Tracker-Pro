@@ -1,16 +1,29 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "apps/host/dist",
-  "installCommand": "npm install",
+  "buildCommand": "npm install && npm run build",
   "framework": null,
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
+      "source": "/fuel-tracker/:path*",
+      "destination": "/apps/fuel-tracker/dist/:path*"
     },
     {
+      "source": "/expense-tracker/:path*",
+      "destination": "/apps/expense-tracker/dist/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/apps/host/dist/:path*"
+    }
+  ],
+  "headers": [
+    {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
     }
   ]
 }
