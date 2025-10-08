@@ -2,7 +2,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
   Link,
   useLocation,
 } from "react-router-dom";
@@ -26,7 +25,6 @@ import {
 import MobileNav from "./components/MobileNav";
 import { useTheme } from "./hooks";
 
-const Login = lazy(() => import("./pages/Login"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const UploadStatement = lazy(() => import("./pages/UploadStatement"));
 const Transactions = lazy(() => import("./pages/Transactions"));
@@ -84,7 +82,16 @@ function ProtectedRoute({ children }) {
     );
   }
 
-  return currentUser ? children : <Navigate to="/login" />;
+  if (!currentUser) {
+    if (import.meta.env.MODE === "production") {
+      window.location.href = "/login";
+    } else {
+      window.location.href = "http://localhost:3000/login";
+    }
+    return null;
+  }
+
+  return children;
 }
 
 function AppContent() {
@@ -221,12 +228,13 @@ function AppContent() {
 }
 
 function App() {
+  const basename =
+    import.meta.env.MODE === "production" ? "/expense-tracker" : "";
   return (
-    <Router basename="/expense-tracker">
+    <Router basename={basename}>
       <AuthProvider>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
-            <Route path="/login" element={<Login />} />
             <Route
               path="/*"
               element={

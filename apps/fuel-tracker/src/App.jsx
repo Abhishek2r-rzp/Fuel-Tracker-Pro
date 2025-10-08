@@ -1,12 +1,5 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@bill-reader/shared-auth";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ScanBill from "./pages/ScanBill";
 import AddManual from "./pages/AddManual";
@@ -28,35 +21,36 @@ function ProtectedRoute({ children }) {
     );
   }
 
-  return currentUser ? children : <Navigate to="/login" />;
+  if (!currentUser) {
+    if (import.meta.env.MODE === "production") {
+      window.location.href = "/login";
+    } else {
+      window.location.href = "http://localhost:3000/login";
+    }
+    return null;
+  }
+
+  return children;
 }
 
 function App() {
+  const basename = import.meta.env.MODE === "production" ? "/fuel-tracker" : "";
   return (
-    <Router basename="/fuel-tracker">
+    <Router basename={basename}>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/*"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/scan" element={<ScanBill />} />
-                    <Route path="/add-manual" element={<AddManual />} />
-                    <Route path="/history" element={<FuelHistory />} />
-                    <Route path="/stations" element={<FuelStations />} />
-                    <Route path="/bike" element={<BikeProfile />} />
-                    <Route path="/contact" element={<Contact />} />
-                  </Routes>
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <ProtectedRoute>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/scan" element={<ScanBill />} />
+              <Route path="/add-manual" element={<AddManual />} />
+              <Route path="/history" element={<FuelHistory />} />
+              <Route path="/stations" element={<FuelStations />} />
+              <Route path="/bike" element={<BikeProfile />} />
+              <Route path="/contact" element={<Contact />} />
+            </Routes>
+          </Layout>
+        </ProtectedRoute>
       </AuthProvider>
     </Router>
   );

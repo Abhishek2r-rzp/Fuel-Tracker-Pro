@@ -2,8 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
-export default defineConfig({
-  base: "/expense-tracker/",
+export default defineConfig(({ mode }) => ({
+  base: mode === "production" ? "/expense-tracker/" : "/",
   plugins: [react()],
   envDir: path.resolve(__dirname, "../../"), // Load .env from monorepo root
   server: {
@@ -57,4 +57,4 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 600,
   },
-});
+}));

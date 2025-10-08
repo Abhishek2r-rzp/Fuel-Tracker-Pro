@@ -22,7 +22,10 @@ function AppSelector() {
       description: "Track motorcycle fuel consumption with bill scanning",
       icon: Fuel,
       color: "from-blue-500 to-blue-600",
-      url: "/fuel-tracker",
+      url:
+        import.meta.env.MODE === "production"
+          ? "/fuel-tracker"
+          : "http://localhost:3001",
       available: true,
     },
     {
@@ -32,7 +35,10 @@ function AppSelector() {
         "Manage expenses with PDF bank statements and credit card bills",
       icon: Receipt,
       color: "from-purple-500 to-purple-600",
-      url: "/expense-tracker",
+      url:
+        import.meta.env.MODE === "production"
+          ? "/expense-tracker"
+          : "http://localhost:3002",
       available: true,
     },
   ];

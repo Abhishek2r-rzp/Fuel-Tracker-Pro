@@ -4,16 +4,16 @@
   "framework": null,
   "rewrites": [
     {
-      "source": "/fuel-tracker/:path*",
-      "destination": "/fuel-tracker/:path*"
+      "source": "/fuel-tracker/:path((?!.*\\.).*)",
+      "destination": "/fuel-tracker/index.html"
     },
     {
-      "source": "/expense-tracker/:path*",
-      "destination": "/expense-tracker/:path*"
+      "source": "/expense-tracker/:path((?!.*\\.).*)",
+      "destination": "/expense-tracker/index.html"
     },
     {
-      "source": "/:path*",
-      "destination": "/:path*"
+      "source": "/:path((?!.*\\.).*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
