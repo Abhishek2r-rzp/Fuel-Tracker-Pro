@@ -1,18 +1,19 @@
 {
-  "buildCommand": "npm install && npm run build",
+  "buildCommand": "bash build-for-vercel.sh",
+  "outputDirectory": "dist",
   "framework": null,
   "rewrites": [
     {
       "source": "/fuel-tracker/:path*",
-      "destination": "/apps/fuel-tracker/dist/:path*"
+      "destination": "/fuel-tracker/:path*"
     },
     {
       "source": "/expense-tracker/:path*",
-      "destination": "/apps/expense-tracker/dist/:path*"
+      "destination": "/expense-tracker/:path*"
     },
     {
       "source": "/:path*",
-      "destination": "/apps/host/dist/:path*"
+      "destination": "/:path*"
     }
   ],
   "headers": [
