@@ -33,7 +33,7 @@ function ProtectedRoute({ children }) {
 
 function App() {
   return (
-    <Router>
+    <Router basename="/fuel-tracker">
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />

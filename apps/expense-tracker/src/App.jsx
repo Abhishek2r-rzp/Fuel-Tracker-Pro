@@ -222,7 +222,7 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
+    <Router basename="/expense-tracker">
       <AuthProvider>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
